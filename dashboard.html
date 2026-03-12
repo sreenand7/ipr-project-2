@@ -660,7 +660,7 @@
                 const canReview = b.booking_status === 'completed' && owner && !MockDB.hasReviewed(currentUser._id, b._id);
                 return `<div class="booking-row">
           <div class="booking-row-header">
-            <span class="booking-item-name" onclick="window.location.href='/item-detail.html?id=${b.item_id}'">${item?.title || 'Unknown item'}</span>
+            <span class="booking-item-name" onclick="window.location.href='item-detail.html?id=${b.item_id}'">${item?.title || 'Unknown item'}</span>
             <span class="status-pill status-${b.booking_status}">${b.booking_status}</span>
           </div>
           <div class="booking-dates">

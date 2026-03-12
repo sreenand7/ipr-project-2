@@ -286,7 +286,7 @@ function renderItemCard(item) {
   const owner = MockDB.findUserById(item.owner_id);
   const cat   = CATEGORIES.find(c => c.id === item.category);
   return `
-    <div class="item-card" onclick="window.location.href='/item-detail.html?id=${item._id}'">
+    <div class="item-card" onclick="window.location.href='item-detail.html?id=${item._id}'">
       <div class="item-card-img-wrap">
         <img class="item-card-img" src="${item.image_url || 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80'}" alt="${item.title}" loading="lazy"
           onerror="this.src='https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80'">
