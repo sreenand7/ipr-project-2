@@ -380,7 +380,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             initNavbar();
-            if (!Auth.isLoggedIn()) { window.location.href = '/auth.html?redirect=/add-item.html'; return; }
+            if (!Auth.isLoggedIn()) { window.location.href = 'auth.html?redirect=add-item.html'; return; }
 
             // Prefill location if user has profile
             const user = Auth.getUser();
@@ -450,7 +450,7 @@
                     image_url: previewVisible ? document.getElementById('preview-img').src : (imgUrl || 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80')
                 });
                 toast('Your listing is live! 🎉', 'success');
-                setTimeout(() => { window.location.href = '/dashboard.html'; }, 1000);
+                setTimeout(() => { window.location.href = 'dashboard.html'; }, 1000);
             }, 700);
         }
     </script>

@@ -22,16 +22,17 @@ const Auth = {
   logout() {
     localStorage.removeItem(this.TOKEN_KEY);
     localStorage.removeItem(this.USER_KEY);
-    window.location.href = '/index.html';
+    window.location.href = 'index.html';
   },
 
   requireAuth() {
-    if (!this.isLoggedIn()) {
-      window.location.href = '/auth.html?redirect=' + encodeURIComponent(window.location.pathname);
-      return false;
-    }
-    return true;
+  if (!this.isLoggedIn()) {
+    const page = window.location.pathname.split('/').pop();
+    window.location.href = 'auth.html?redirect=' + page;
+    return false;
   }
+  return true;
+}
 };
 
 // ── API Client ───────────────────────────────────────────────────────────────

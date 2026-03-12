@@ -459,7 +459,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             initNavbar();
             const id = new URLSearchParams(window.location.search).get('id');
-            if (!id) { window.location.href = '/index.html'; return; }
+            if (!id) { window.location.href = 'index.html'; return; }
             loadItem(id);
             // Set min date to today
             const today = new Date().toISOString().split('T')[0];
@@ -470,7 +470,7 @@
 
         function loadItem(id) {
             currentItem = MockDB.getItemById(id);
-            if (!currentItem) { toast('Item not found', 'error'); setTimeout(() => window.location.href = '/index.html', 1500); return; }
+            if (!currentItem) { toast('Item not found', 'error'); setTimeout(() => window.location.href = 'index.html', 1500); return; }
             currentOwner = MockDB.findUserById(currentItem.owner_id);
             const cat = CATEGORIES.find(c => c.id === currentItem.category);
 
@@ -546,7 +546,7 @@
         }
 
         function handleBooking() {
-            if (!Auth.isLoggedIn()) { window.location.href = '/auth.html?redirect=' + encodeURIComponent(window.location.href); return; }
+            if (!Auth.isLoggedIn()) { window.location.href = 'auth.html?redirect=' + encodeURIComponent(window.location.href); return; }
             const s = document.getElementById('start-date').value;
             const e = document.getElementById('end-date').value;
             if (!s || !e) { toast('Please select rental dates', 'warning'); return; }

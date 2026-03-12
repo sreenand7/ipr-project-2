@@ -422,7 +422,7 @@
     <script src="utils.js"></script>
     <script>
         // Redirect if already logged in
-        if (Auth.isLoggedIn()) window.location.href = '/dashboard.html';
+        if (Auth.isLoggedIn()) window.location.href = 'dashboard.html';
 
         setTimeout(hideLoader, 300);
 
@@ -479,7 +479,7 @@
                 const { password: _, ...safeUser } = user;
                 Auth.save('mock_jwt_' + user._id, safeUser);
                 toast('Account created! Welcome to RentMyThings 🎉', 'success');
-                setTimeout(() => { window.location.href = '/dashboard.html'; }, 1000);
+                setTimeout(() => { window.location.href = 'dashboard.html'; }, 1000);
             }, 700);
         }
 
