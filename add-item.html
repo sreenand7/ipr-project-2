@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>List an Item – RentMyThings</title>
+    <meta name="description"
+        content="List your item for rent on RentMyThings and start earning money from things you rarely use." />
+    <link rel="stylesheet" href="main.css" />
+    <style>
+        .add-layout {
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 2.5rem;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 3rem 2.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .add-form-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            padding: 2.5rem;
+        }
+
+        .form-section-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 800;
+            margin-bottom: 1.25rem;
+            padding-bottom: .75rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: .6rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        /* Image upload */
+        .upload-zone {
+            border: 2px dashed var(--border);
+            border-radius: var(--radius-lg);
+            padding: 2.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            background: rgba(255, 255, 255, .02);
+        }
+
+        .upload-zone:hover,
+        .upload-zone.dragover {
+            border-color: var(--primary);
+            background: var(--primary-glow);
+        }
+
+        .upload-zone-icon {
+            font-size: 2.5rem;
+            margin-bottom: .75rem;
+        }
+
+        .upload-zone p {
+            font-size: .875rem;
+            color: var(--text-secondary);
+            margin-bottom: .5rem;
+        }
+
+        .upload-zone span {
+            font-size: .75rem;
+            color: var(--text-muted);
+        }
+
+        #preview-img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            margin-top: 1rem;
+            display: none;
+        }
+
+        /* Tips sidebar */
+        .tips-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            padding: 1.75rem;
+            position: sticky;
+            top: 88px;
+        }
+
+        .tip-item {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+            padding: .85rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .tip-item:last-child {
+            border-bottom: none;
+        }
+
+        .tip-num {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--primary-glow);
+            border: 1px solid rgba(0, 201, 167, .25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .75rem;
+            font-weight: 800;
+            color: var(--primary);
+            flex-shrink: 0;
+        }
+
+        .tip-text strong {
+            display: block;
+            font-size: .875rem;
+            margin-bottom: .2rem;
+        }
+
+        .tip-text span {
+            font-size: .8rem;
+            color: var(--text-muted);
+        }
+
+        .char-count {
+            font-size: .75rem;
+            color: var(--text-muted);
+            text-align: right;
+        }
+
+        @media(max-width:900px) {
+            .add-layout {
+                grid-template-columns: 1fr
+            }
+
+            .tips-card {
+                position: static
+            }
+        }
+
+        @media(max-width:560px) {
+            .form-row {
+                grid-template-columns: 1fr
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page-loader" id="page-loader">
+        <div class="loader-ring"></div>
+    </div>
+    <div class="bg-blobs"><span></span><span></span><span></span></div>
+
+    <!-- Navbar -->
+    <nav class="navbar" id="navbar">
+        <a href="index.html" class="nav-logo">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+                <rect width="28" height="28" rx="8" fill="rgba(0,201,167,0.15)" />
+                <path d="M7 14l5 5 9-9" stroke="#00c9a7" stroke-width="2.5" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                <circle cx="20" cy="8" r="3" fill="#ffbe0b" />
+            </svg>
+            Rent<span class="logo-dot">My</span>Things
+        </a>
+        <div class="nav-links">
+            <a href="index.html">Browse</a>
+            <a href="add-item.html" class="active">List an Item</a>
+            <a href="dashboard.html">Dashboard</a>
+        </div>
+        <div class="nav-actions">
+            <button class="nav-user-pill hidden" id="nav-user-pill" onclick="window.location.href='/dashboard.html'">
+                <div class="nav-avatar"><span id="nav-avatar-initial">?</span></div>
+                <span id="nav-user-name">User</span>
+            </button>
+            <button class="btn btn-ghost btn-sm hidden" id="nav-logout-btn" onclick="Auth.logout()">Logout</button>
+            <a href="auth.html" class="btn btn-primary btn-sm" id="nav-login-btn">Sign In</a>
+            <button class="hamburger" id="nav-hamburger"><span></span><span></span><span></span></button>
+        </div>
+    </nav>
+    <div class="mobile-menu hidden" id="mobile-menu">
+        <a href="index.html">Browse</a><a href="add-item.html">List an Item</a><a href="dashboard.html">Dashboard</a>
+        <div style="height:1px;background:var(--border);margin:.5rem 0"></div>
+        <a href="auth.html" id="mobile-login">Sign In</a>
+        <button class="hidden" id="mobile-logout" onclick="Auth.logout()">Logout</button>
+    </div>
+
+    <!-- Page header -->
+    <div style="position:relative;z-index:1;padding:3rem 2.5rem 0;max-width:1100px;margin:0 auto">
+        <span class="section-label">Create Listing</span>
+        <h1 class="section-title">List Your Item for <span class="highlight">Rent</span></h1>
+        <p style="color:var(--text-secondary);margin-top:.5rem;font-size:.95rem">Fill in the details below to list your
+            item and start earning.</p>
+    </div>
+
+    <div class="add-layout">
+        <!-- Form -->
+        <div class="add-form-card">
+            <form id="add-item-form" onsubmit="handleSubmit(event)" novalidate>
+
+                <!-- Basic Info -->
+                <div class="form-section-title">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary)"
+                        stroke-width="2">
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="12" y1="8" x2="12" y2="12" />
+                        <line x1="12" y1="16" x2="12.01" y2="16" />
+                    </svg>
+                    Basic Information
+                </div>
+                <div style="display:flex;flex-direction:column;gap:1.25rem;margin-bottom:2rem">
+                    <div class="form-group">
+                        <label class="form-label">Item Title *</label>
+                        <input type="text" class="form-input" id="f-title"
+                            placeholder="e.g. Sony A7III Camera with 50mm Lens" required maxlength="80"
+                            oninput="document.getElementById('title-count').textContent = this.value.length + '/80'" />
+                        <div class="char-count"><span id="title-count">0/80</span></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Description *</label>
+                        <textarea class="form-textarea" id="f-desc"
+                            placeholder="Describe your item in detail — condition, included accessories, any restrictions on use…"
+                            required maxlength="500"
+                            oninput="document.getElementById('desc-count').textContent = this.value.length + '/500'"
+                            style="min-height:130px"></textarea>
+                        <div class="char-count"><span id="desc-count">0/500</span></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Category *</label>
+                            <select class="form-select" id="f-category" required>
+                                <option value="">Choose category…</option>
+                                <option value="cameras">📸 Cameras</option>
+                                <option value="tools">🔧 Power Tools</option>
+                                <option value="camping">⛺ Camping Gear</option>
+                                <option value="electronics">🎮 Electronics</option>
+                                <option value="sports">🚴 Sports</option>
+                                <option value="music">🎸 Music</option>
+                                <option value="vehicles">🚗 Vehicles</option>
+                                <option value="kitchen">🍳 Kitchen</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Condition *</label>
+                            <select class="form-select" id="f-condition" required>
+                                <option value="">Select condition…</option>
+                                <option value="Excellent">🌟 Excellent – Like new</option>
+                                <option value="Good">👍 Good – Minor wear</option>
+                                <option value="Fair">⚠️ Fair – Visible wear but functional</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pricing & Location -->
+                <div class="form-section-title">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary)"
+                        stroke-width="2">
+                        <line x1="12" y1="1" x2="12" y2="23" />
+                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                    </svg>
+                    Pricing & Location
+                </div>
+                <div style="display:flex;flex-direction:column;gap:1.25rem;margin-bottom:2rem">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Rental Price per Day (₹) *</label>
+                            <input type="number" class="form-input" id="f-price" placeholder="e.g. 500" min="1"
+                                required />
+                            <span class="form-hint">Set a competitive daily rate. You can always change it later.</span>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Your Location *</label>
+                            <input type="text" class="form-input" id="f-location"
+                                placeholder="City or area (e.g. Bangalore)" required />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Image -->
+                <div class="form-section-title">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary)"
+                        stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2" />
+                        <circle cx="8.5" cy="8.5" r="1.5" />
+                        <polyline points="21 15 16 10 5 21" />
+                    </svg>
+                    Item Photo
+                </div>
+                <div class="upload-zone" id="upload-zone" onclick="document.getElementById('f-image').click()"
+                    ondragover="e=>{e.preventDefault();this.classList.add('dragover')}"
+                    ondragleave="this.classList.remove('dragover')" ondrop="handleDrop(event)">
+                    <div class="upload-zone-icon">📷</div>
+                    <p><strong>Click to upload</strong> or drag and drop</p>
+                    <span>PNG, JPG, WEBP up to 5MB</span>
+                </div>
+                <input type="file" id="f-image" accept="image/*" style="display:none"
+                    onchange="handleImageSelect(event)" />
+                <img id="preview-img" alt="Preview" />
+
+                <!-- Or use URL -->
+                <div style="margin-top:1rem">
+                    <div class="form-group">
+                        <label class="form-label">Or paste an image URL</label>
+                        <input type="url" class="form-input" id="f-image-url" placeholder="https://…"
+                            oninput="previewFromUrl(this.value)" />
+                    </div>
+                </div>
+
+                <div style="margin-top:2rem;display:flex;gap:1rem;align-items:center;flex-wrap:wrap">
+                    <button type="submit" class="btn btn-primary btn-lg" id="submit-btn">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                            <polyline points="22 4 12 14.01 9 11.01" />
+                        </svg>
+                        Publish Listing
+                    </button>
+                    <a href="index.html" class="btn btn-ghost">Cancel</a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Tips sidebar -->
+        <div class="tips-card">
+            <h3 style="font-family:'Outfit',sans-serif;font-size:1.1rem;font-weight:800;margin-bottom:1rem">
+                💡 Tips for Great Listings
+            </h3>
+            <div class="tip-item">
+                <div class="tip-num">1</div>
+                <div class="tip-text"><strong>Add a clear photo</strong><span>Items with high-quality photos get 3× more
+                        bookings.</span></div>
+            </div>
+            <div class="tip-item">
+                <div class="tip-num">2</div>
+                <div class="tip-text"><strong>Describe thoroughly</strong><span>Include all accessories, usage notes and
+                        any restrictions.</span></div>
+            </div>
+            <div class="tip-item">
+                <div class="tip-num">3</div>
+                <div class="tip-text"><strong>Price competitively</strong><span>Aim for 3–5% of the item's market value
+                        per day.</span></div>
+            </div>
+            <div class="tip-item">
+                <div class="tip-num">4</div>
+                <div class="tip-text"><strong>Keep location accurate</strong><span>Renters search by city — be specific
+                        about your area.</span></div>
+            </div>
+            <div class="tip-item">
+                <div class="tip-num">5</div>
+                <div class="tip-text"><strong>Respond quickly</strong><span>Owners who respond within 1 hour get more
+                        bookings.</span></div>
+            </div>
+
+            <div class="divider"></div>
+            <div
+                style="background:var(--primary-glow);border:1px solid rgba(0,201,167,.2);border-radius:var(--radius-md);padding:1rem;font-size:.8rem;color:var(--text-secondary)">
+                <strong style="color:var(--primary);display:block;margin-bottom:.35rem">💰 Earning Potential</strong>
+                A camera rented 3 days/month at ₹800/day earns ₹28,800/year!
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container"></div>
+    <script src="utils.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            initNavbar();
+            if (!Auth.isLoggedIn()) { window.location.href = '/auth.html?redirect=/add-item.html'; return; }
+
+            // Prefill location if user has profile
+            const user = Auth.getUser();
+            setTimeout(hideLoader, 300);
+        });
+
+        function handleImageSelect(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = ev => {
+                const img = document.getElementById('preview-img');
+                img.src = ev.target.result;
+                img.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            document.getElementById('upload-zone').classList.remove('dragover');
+            const file = e.dataTransfer.files[0];
+            if (!file || !file.type.startsWith('image/')) { toast('Please drop an image file', 'warning'); return; }
+            const reader = new FileReader();
+            reader.onload = ev => {
+                const img = document.getElementById('preview-img');
+                img.src = ev.target.result;
+                img.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function previewFromUrl(url) {
+            const img = document.getElementById('preview-img');
+            if (!url) { img.style.display = 'none'; return; }
+            img.src = url;
+            img.style.display = 'block';
+            img.onerror = () => { img.style.display = 'none'; };
+        }
+
+        function handleSubmit(e) {
+            e.preventDefault();
+            const title = document.getElementById('f-title').value.trim();
+            const desc = document.getElementById('f-desc').value.trim();
+            const category = document.getElementById('f-category').value;
+            const condition = document.getElementById('f-condition').value;
+            const price = parseInt(document.getElementById('f-price').value);
+            const location = document.getElementById('f-location').value.trim();
+            const imgUrl = document.getElementById('f-image-url').value.trim() ||
+                document.getElementById('preview-img').src ||
+                'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80';
+            const previewVisible = document.getElementById('preview-img').style.display !== 'none';
+
+            if (!title || !desc || !category || !condition || !price || !location) {
+                toast('Please fill in all required fields', 'warning'); return;
+            }
+
+            const btn = document.getElementById('submit-btn');
+            btn.disabled = true; btn.textContent = 'Publishing…';
+
+            const user = Auth.getUser();
+            setTimeout(() => {
+                MockDB.createItem({
+                    owner_id: user._id,
+                    title, description: desc, category, condition,
+                    price_per_day: price, location,
+                    image_url: previewVisible ? document.getElementById('preview-img').src : (imgUrl || 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80')
+                });
+                toast('Your listing is live! 🎉', 'success');
+                setTimeout(() => { window.location.href = '/dashboard.html'; }, 1000);
+            }, 700);
+        }
+    </script>
+</body>
+
+</html>

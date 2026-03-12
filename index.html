@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>RentMyThings – Rent Anything from Your Neighbors</title>
+    <meta name="description"
+        content="Peer-to-peer rental platform. Rent cameras, tools, camping gear and more from people near you. Save money, share resources, build community." />
+    <link rel="stylesheet" href="main.css" />
+    <style>
+        /* ── Hero ────────────────────────────────── */
+        .hero {
+            min-height: 92vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+            padding: 6rem 2.5rem 4rem;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            max-width: 640px;
+            z-index: 2;
+        }
+
+        .hero-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.35rem 0.9rem;
+            background: var(--primary-glow);
+            border: 1px solid rgba(0, 201, 167, 0.3);
+            border-radius: var(--radius-full);
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 1.5rem;
+            animation: fadeInDown 0.6s ease both;
+        }
+
+        .hero-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: clamp(2.6rem, 5.5vw, 4rem);
+            font-weight: 900;
+            line-height: 1.08;
+            margin-bottom: 1.25rem;
+            animation: fadeInDown 0.6s 0.1s ease both;
+        }
+
+        .hero-title .grad {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            max-width: 520px;
+            margin-bottom: 2.5rem;
+            line-height: 1.75;
+            animation: fadeInDown 0.6s 0.2s ease both;
+        }
+
+        .hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 3rem;
+            animation: fadeInDown 0.6s 0.3s ease both;
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 2.5rem;
+            flex-wrap: wrap;
+            animation: fadeInDown 0.6s 0.4s ease both;
+        }
+
+        .hero-stat strong {
+            display: block;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .hero-stat span {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .hero-visual {
+            position: absolute;
+            right: -40px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 520px;
+            height: 520px;
+            z-index: 1;
+            background: radial-gradient(circle at center, rgba(0, 201, 167, 0.12) 0%, transparent 70%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        .hero-visual-inner {
+            position: absolute;
+            inset: 60px;
+            border-radius: 50%;
+            border: 1px solid rgba(0, 201, 167, 0.2);
+            animation: rotate 20s linear infinite;
+        }
+
+        .hero-visual-inner::before {
+            content: '';
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: var(--primary);
+            border-radius: 50%;
+            top: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 0 20px var(--primary);
+        }
+
+        .floating-card {
+            position: absolute;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            backdrop-filter: blur(12px);
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            animation: float 6s ease-in-out infinite alternate;
+        }
+
+        .floating-card:nth-child(1) {
+            top: 15%;
+            right: 5%;
+            animation-delay: 0s;
+        }
+
+        .floating-card:nth-child(2) {
+            top: 42%;
+            right: 32%;
+            animation-delay: -2s;
+        }
+
+        .floating-card:nth-child(3) {
+            bottom: 20%;
+            right: 8%;
+            animation-delay: -4s;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0)
+            }
+
+            100% {
+                transform: translateY(-16px)
+            }
+        }
+
+        @keyframes rotate {
+            to {
+                transform: rotate(360deg)
+            }
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: translateY(-50%) scale(1)
+            }
+
+            50% {
+                transform: translateY(-50%) scale(1.05)
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        /* ── Search Section ──────────────────────── */
+        .search-section {
+            position: relative;
+            z-index: 2;
+            margin-top: -3rem;
+            padding: 0 2.5rem 2rem;
+        }
+
+        .search-wrapper {
+            max-width: 860px;
+            margin: 0 auto;
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            padding: 1.75rem;
+            box-shadow: var(--shadow-float);
+        }
+
+        .search-wrapper h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .search-inputs {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .search-inputs .form-input,
+        .search-inputs .form-select {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        /* ── Categories ──────────────────────────── */
+        .cat-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 1rem;
+        }
+
+        .cat-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 1.25rem 0.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            transition: var(--transition-slow);
+            text-align: center;
+        }
+
+        .cat-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--border-hover);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .cat-emoji {
+            font-size: 2rem;
+        }
+
+        .cat-label {
+            font-size: 0.73rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        /* ── How It Works ────────────────────────── */
+        .how-card {
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .how-num {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #fff;
+            margin: 0 auto 1.25rem;
+            box-shadow: 0 0 20px var(--primary-glow);
+        }
+
+        .how-card h3 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .how-card p {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        .how-connector {
+            position: absolute;
+            top: 50px;
+            right: -40px;
+            font-size: 1.5rem;
+            color: var(--text-muted);
+            z-index: 2;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Page Loader -->
+    <div class="page-loader" id="page-loader">
+        <div class="loader-ring"></div>
+    </div>
+
+    <!-- Background -->
+    <div class="bg-blobs"><span></span><span></span><span></span></div>
+
+    <!-- Navbar -->
+    <nav class="navbar" id="navbar">
+        <a href="index.html" class="nav-logo" aria-label="RentMyThings Home">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+                <rect width="28" height="28" rx="8" fill="rgba(0,201,167,0.15)" />
+                <path d="M7 14l5 5 9-9" stroke="#00c9a7" stroke-width="2.5" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                <circle cx="20" cy="8" r="3" fill="#ffbe0b" />
+            </svg>
+            Rent<span class="logo-dot">My</span>Things
+        </a>
+
+        <div class="nav-links">
+            <a href="index.html" class="active">Browse</a>
+            <a href="add-item.html">List an Item</a>
+            <a href="dashboard.html">Dashboard</a>
+        </div>
+
+        <div class="nav-actions">
+            <button class="nav-user-pill hidden" id="nav-user-pill" onclick="window.location.href='/dashboard.html'">
+                <div class="nav-avatar" id="nav-avatar"><span id="nav-avatar-initial">?</span></div>
+                <span id="nav-user-name">User</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="6,9 12,15 18,9" />
+                </svg>
+            </button>
+            <button class="btn btn-ghost btn-sm" id="nav-logout-btn" onclick="Auth.logout()"
+                style="display:none">Logout</button>
+            <a href="auth.html" class="btn btn-primary btn-sm" id="nav-login-btn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+                    <polyline points="10,17 15,12 10,7" />
+                    <line x1="15" y1="12" x2="3" y2="12" />
+                </svg>
+                Sign In
+            </a>
+            <button class="hamburger" id="nav-hamburger" aria-label="Menu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu hidden" id="mobile-menu">
+        <a href="index.html">Browse Items</a>
+        <a href="add-item.html">List an Item</a>
+        <a href="dashboard.html">Dashboard</a>
+        <div style="height:1px;background:var(--border);margin:.5rem 0"></div>
+        <a href="auth.html" id="mobile-login">Sign In / Register</a>
+        <button id="mobile-logout" class="hidden" onclick="Auth.logout()">Logout</button>
+    </div>
+
+    <!-- ── Hero ─────────────────────────────────────────────────── -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-eyebrow">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                    <path
+                        d="M12 2L15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26z" />
+                </svg>
+                Peer-to-Peer Rental Platform
+            </div>
+            <h1 class="hero-title">Rent <span class="grad">Anything</span> from People Near You</h1>
+            <p class="hero-subtitle">Why buy when you can borrow? RentMyThings connects you with neighbors who have
+                tools, cameras, camping gear, and more—saving money and building community.</p>
+            <div class="hero-actions">
+                <a href="#browse" class="btn btn-primary btn-lg">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8" />
+                        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                    </svg>
+                    Browse Items
+                </a>
+                <a href="add-item.html" class="btn btn-outline btn-lg">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="5" x2="12" y2="19" />
+                        <line x1="5" y1="12" x2="19" y2="12" />
+                    </svg>
+                    List Your Item
+                </a>
+            </div>
+            <div class="hero-stats">
+                <div class="hero-stat"><strong>1,200+</strong><span>Items listed</span></div>
+                <div class="hero-stat"><strong>840+</strong><span>Happy renters</span></div>
+                <div class="hero-stat"><strong>4.8 ★</strong><span>Avg. rating</span></div>
+            </div>
+        </div>
+
+        <!-- Decorative visual -->
+        <div class="hero-visual">
+            <div class="hero-visual-inner"></div>
+            <div class="floating-card" style="background:rgba(14,19,32,.85)">
+                <span style="font-size:1.5rem">📸</span>
+                <div>
+                    <div style="color:var(--text-primary);font-size:.82rem">Sony A7III</div>
+                    <div style="color:var(--primary)">₹800/day</div>
+                </div>
+            </div>
+            <div class="floating-card" style="background:rgba(14,19,32,.85)">
+                <span style="font-size:1.5rem">⛺</span>
+                <div>
+                    <div style="color:var(--text-primary);font-size:.82rem">Camping Tent</div>
+                    <div style="color:var(--primary)">₹350/day</div>
+                </div>
+            </div>
+            <div class="floating-card" style="background:rgba(14,19,32,.85)">
+                <span style="font-size:1.5rem">🚁</span>
+                <div>
+                    <div style="color:var(--text-primary);font-size:.82rem">DJI Drone</div>
+                    <div style="color:var(--primary)">₹1,200/day</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Search Section ───────────────────────────────────────── -->
+    <section class="search-section">
+        <div class="search-wrapper">
+            <h3>🔍 Search for items to rent</h3>
+            <div class="search-inputs">
+                <input type="text" class="form-input" id="kw-input" placeholder="What do you need? (camera, drill…)" />
+                <div class="divider-v" style="width:1px;background:var(--border)"></div>
+                <select class="form-select" id="cat-filter">
+                    <option value="">All Categories</option>
+                    <option value="cameras">📸 Cameras</option>
+                    <option value="tools">🔧 Power Tools</option>
+                    <option value="camping">⛺ Camping Gear</option>
+                    <option value="electronics">🎮 Electronics</option>
+                    <option value="sports">🚴 Sports</option>
+                    <option value="music">🎸 Music</option>
+                    <option value="vehicles">🚗 Vehicles</option>
+                    <option value="kitchen">🍳 Kitchen</option>
+                </select>
+                <input type="text" class="form-input" id="loc-input" placeholder="📍 City or area" />
+                <button class="btn btn-primary" id="search-btn" onclick="doSearch()">Search</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Categories ───────────────────────────────────────────── -->
+    <section class="section-sm" id="categories">
+        <div class="container">
+            <div class="section-header" style="margin-bottom:1.75rem">
+                <span class="section-label">Explore by</span>
+                <h2 class="section-title">Item <span class="highlight">Categories</span></h2>
+            </div>
+            <div class="cat-grid" id="cat-grid"></div>
+        </div>
+    </section>
+
+    <!-- ── Browse Items ──────────────────────────────────────────── -->
+    <section class="section" id="browse">
+        <div class="container">
+            <div class="section-header"
+                style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;text-align:left;margin-bottom:2rem">
+                <div>
+                    <span class="section-label">Available Now</span>
+                    <h2 class="section-title" style="margin-bottom:0">Latest <span class="highlight">Listings</span>
+                    </h2>
+                </div>
+                <div style="display:flex;gap:.5rem;align-items:center">
+                    <select class="form-select" id="sort-select" style="width:auto;min-width:160px"
+                        onchange="doSearch()">
+                        <option value="newest">Newest First</option>
+                        <option value="price-asc">Price: Low to High</option>
+                        <option value="price-desc">Price: High to Low</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid-auto" id="items-grid">
+                <!-- Skeleton loaders -->
+                <div class="item-card">
+                    <div class="skeleton" style="height:200px"></div>
+                    <div class="item-card-body">
+                        <div class="skeleton" style="height:1rem;margin-bottom:.5rem"></div>
+                        <div class="skeleton" style="height:.75rem;width:60%"></div>
+                    </div>
+                </div>
+                <div class="item-card">
+                    <div class="skeleton" style="height:200px"></div>
+                    <div class="item-card-body">
+                        <div class="skeleton" style="height:1rem;margin-bottom:.5rem"></div>
+                        <div class="skeleton" style="height:.75rem;width:60%"></div>
+                    </div>
+                </div>
+                <div class="item-card">
+                    <div class="skeleton" style="height:200px"></div>
+                    <div class="item-card-body">
+                        <div class="skeleton" style="height:1rem;margin-bottom:.5rem"></div>
+                        <div class="skeleton" style="height:.75rem;width:60%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-4">
+                <button class="btn btn-outline" id="load-more-btn" onclick="loadMore()" style="display:none">Load More
+                    Items</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── How It Works ──────────────────────────────────────────── -->
+    <section class="section"
+        style="background:var(--bg-surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-label">Simple Process</span>
+                <h2 class="section-title">How <span class="highlight">RentMyThings</span> Works</h2>
+                <p class="section-sub">From browsing to borrowing in just a few steps.</p>
+            </div>
+            <div class="grid-4" style="position:relative">
+                <div class="card how-card">
+                    <div class="how-num">1</div>
+                    <h3>Create Account</h3>
+                    <p>Sign up in seconds. Set up your profile and verify your identity to build trust in the community.
+                    </p>
+                    <span class="how-connector">→</span>
+                </div>
+                <div class="card how-card">
+                    <div class="how-num">2</div>
+                    <h3>Find or List</h3>
+                    <p>Search for items near you by category or location. Or list your own items and set your price.</p>
+                    <span class="how-connector">→</span>
+                </div>
+                <div class="card how-card">
+                    <div class="how-num">3</div>
+                    <h3>Book & Confirm</h3>
+                    <p>Send a rental request for your dates. The owner reviews and approves. You're all set!</p>
+                    <span class="how-connector">→</span>
+                </div>
+                <div class="card how-card">
+                    <div class="how-num">4</div>
+                    <h3>Rent & Review</h3>
+                    <p>Pick up the item, use it, and return it. Leave a review to help the community grow.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── CTA Banner ─────────────────────────────────────────────── -->
+    <section class="section">
+        <div class="container">
+            <div class="card"
+                style="padding:3.5rem;text-align:center;background:linear-gradient(135deg,rgba(0,201,167,.08),rgba(124,92,191,.08));border-color:rgba(0,201,167,.2);position:relative;overflow:hidden">
+                <div
+                    style="position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(0,201,167,.08),transparent 70%);pointer-events:none">
+                </div>
+                <h2 class="section-title" style="margin-bottom:1rem">Have something to <span class="highlight">rent
+                        out?</span></h2>
+                <p class="section-sub" style="margin-bottom:2rem">Turn idle items into income. List your stuff and earn
+                    money from your neighbors.</p>
+                <a href="add-item.html" class="btn btn-secondary btn-lg">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="5" x2="12" y2="19" />
+                        <line x1="5" y1="12" x2="19" y2="12" />
+                    </svg>
+                    Start Listing Now — It's Free
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Footer ─────────────────────────────────────────────────── -->
+    <footer class="footer">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <div class="nav-logo" style="margin-bottom:.75rem">
+                    <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+                        <rect width="28" height="28" rx="8" fill="rgba(0,201,167,0.15)" />
+                        <path d="M7 14l5 5 9-9" stroke="#00c9a7" stroke-width="2.5" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                        <circle cx="20" cy="8" r="3" fill="#ffbe0b" />
+                    </svg>
+                    Rent<span class="logo-dot">My</span>Things
+                </div>
+                <p>A peer-to-peer rental platform connecting owners with renters in the local community. Share more,
+                    waste less.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Platform</h4>
+                <a href="index.html">Browse Items</a>
+                <a href="add-item.html">List an Item</a>
+                <a href="dashboard.html">Dashboard</a>
+                <a href="auth.html">Sign In</a>
+            </div>
+            <div class="footer-col">
+                <h4>Categories</h4>
+                <a href="index.html?cat=cameras">Cameras</a>
+                <a href="index.html?cat=tools">Power Tools</a>
+                <a href="index.html?cat=camping">Camping</a>
+                <a href="index.html?cat=electronics">Electronics</a>
+            </div>
+            <div class="footer-col">
+                <h4>Support</h4>
+                <a href="#">How It Works</a>
+                <a href="#">Trust & Safety</a>
+                <a href="#">Help Center</a>
+                <a href="#">Contact Us</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>© 2025 RentMyThings. All rights reserved.</span>
+            <span>Made with ❤️ for the sharing economy</span>
+        </div>
+    </footer>
+
+    <!-- Toast container -->
+    <div id="toast-container"></div>
+
+    <script src="utils.js"></script>
+    <script>
+        let allItems = [];
+        let visibleCount = 8;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initNavbar();
+
+            // Category grid
+            const catGrid = document.getElementById('cat-grid');
+            catGrid.innerHTML = CATEGORIES.map(c => `
+        <div class="cat-card" onclick="filterByCategory('${c.id}')">
+          <span class="cat-emoji">${c.emoji}</span>
+          <span class="cat-label">${c.label}</span>
+        </div>
+      `).join('');
+
+            // Check URL params
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('cat')) {
+                document.getElementById('cat-filter').value = params.get('cat');
+            }
+
+            loadItems();
+            setTimeout(hideLoader, 400);
+        });
+
+        function loadItems() {
+            const kw = document.getElementById('kw-input').value.trim();
+            const cat = document.getElementById('cat-filter').value;
+            const loc = document.getElementById('loc-input').value.trim();
+            const sort = document.getElementById('sort-select').value;
+
+            allItems = MockDB.getItems({ keyword: kw || undefined, category: cat || undefined, location: loc || undefined });
+
+            if (sort === 'price-asc') allItems.sort((a, b) => a.price_per_day - b.price_per_day);
+            if (sort === 'price-desc') allItems.sort((a, b) => b.price_per_day - a.price_per_day);
+
+            renderItems();
+        }
+
+        function renderItems() {
+            const grid = document.getElementById('items-grid');
+            const visible = allItems.slice(0, visibleCount);
+            if (visible.length === 0) {
+                grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <h3>No items found</h3>
+          <p>Try adjusting your search filters or browse all categories.</p>
+          <button class="btn btn-outline" onclick="clearSearch()">Clear Filters</button>
+        </div>`;
+            } else {
+                grid.innerHTML = visible.map(renderItemCard).join('');
+            }
+            const lb = document.getElementById('load-more-btn');
+            lb.style.display = allItems.length > visibleCount ? 'inline-flex' : 'none';
+        }
+
+        function loadMore() { visibleCount += 8; renderItems(); }
+
+        function doSearch() { visibleCount = 8; loadItems(); }
+
+        function clearSearch() {
+            document.getElementById('kw-input').value = '';
+            document.getElementById('cat-filter').value = '';
+            document.getElementById('loc-input').value = '';
+            doSearch();
+        }
+
+        function filterByCategory(cat) {
+            document.getElementById('cat-filter').value = cat;
+            document.getElementById('browse').scrollIntoView({ behavior: 'smooth' });
+            doSearch();
+        }
+
+        document.getElementById('kw-input').addEventListener('keydown', e => {
+            if (e.key === 'Enter') doSearch();
+        });
+    </script>
+</body>
+
+</html>

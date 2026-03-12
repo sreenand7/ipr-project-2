@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>Item Details – RentMyThings</title>
+    <meta name="description"
+        content="View item details, check availability and send a booking request on RentMyThings." />
+    <link rel="stylesheet" href="main.css" />
+    <style>
+        .item-hero {
+            padding: 2rem 2.5rem 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .item-layout {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 2.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 2.5rem 4rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .item-main-img {
+            width: 100%;
+            height: 420px;
+            object-fit: cover;
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--border);
+        }
+
+        .img-thumbs {
+            display: flex;
+            gap: .75rem;
+            margin-top: .75rem;
+            overflow-x: auto;
+        }
+
+        .img-thumb {
+            width: 80px;
+            height: 60px;
+            border-radius: var(--radius-sm);
+            object-fit: cover;
+            cursor: pointer;
+            border: 2px solid transparent;
+            flex-shrink: 0;
+            transition: var(--transition);
+            opacity: .65;
+        }
+
+        .img-thumb.active {
+            border-color: var(--primary);
+            opacity: 1;
+        }
+
+        .item-info {
+            margin-top: 1.5rem;
+        }
+
+        .item-info-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: .75rem;
+        }
+
+        .item-meta-row {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .item-desc {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+        }
+
+        .item-attrs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: .75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .item-attr {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: .85rem 1rem;
+        }
+
+        .item-attr-label {
+            font-size: .72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            color: var(--text-muted);
+            margin-bottom: .3rem;
+        }
+
+        .item-attr-val {
+            font-size: .9rem;
+            font-weight: 600;
+        }
+
+        /* Booking sidebar */
+        .booking-card {
+            position: sticky;
+            top: 88px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            padding: 1.75rem;
+            box-shadow: var(--shadow-card);
+        }
+
+        .booking-price-row {
+            display: flex;
+            align-items: baseline;
+            gap: .5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .booking-price {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--secondary);
+        }
+
+        .booking-price sub {
+            font-size: .9rem;
+            font-weight: 400;
+            color: var(--text-secondary);
+        }
+
+        .date-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: .65rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .date-summary {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: .85rem 1rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            font-size: .875rem;
+            margin-bottom: .85rem;
+        }
+
+        .date-summary span:last-child {
+            font-weight: 700;
+            color: var(--secondary);
+        }
+
+        /* Owner card */
+        .owner-card {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.25rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            margin-bottom: 1.25rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .owner-card:hover {
+            border-color: var(--border-hover);
+            background: var(--bg-card-hover);
+        }
+
+        .owner-info h4 {
+            font-size: .95rem;
+            font-weight: 700;
+            margin-bottom: .2rem;
+        }
+
+        .owner-info p {
+            font-size: .8rem;
+            color: var(--text-secondary);
+        }
+
+        /* Reviews */
+        .reviews-section {
+            padding: 0 2.5rem 4rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .review-item {
+            padding: 1.25rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .review-item:last-child {
+            border-bottom: none;
+        }
+
+        .review-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: .5rem;
+        }
+
+        .review-author {
+            display: flex;
+            align-items: center;
+            gap: .65rem;
+            font-weight: 600;
+            font-size: .9rem;
+        }
+
+        .review-date {
+            font-size: .78rem;
+            color: var(--text-muted);
+        }
+
+        .review-text {
+            font-size: .875rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin-top: .5rem;
+        }
+
+        @media(max-width: 900px) {
+            .item-layout {
+                grid-template-columns: 1fr
+            }
+
+            .booking-card {
+                position: static
+            }
+        }
+
+        @media(max-width: 600px) {
+            .item-main-img {
+                height: 260px
+            }
+
+            .item-attrs {
+                grid-template-columns: 1fr
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page-loader" id="page-loader">
+        <div class="loader-ring"></div>
+    </div>
+    <div class="bg-blobs"><span></span><span></span><span></span></div>
+
+    <!-- Navbar -->
+    <nav class="navbar" id="navbar">
+        <a href="index.html" class="nav-logo">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+                <rect width="28" height="28" rx="8" fill="rgba(0,201,167,0.15)" />
+                <path d="M7 14l5 5 9-9" stroke="#00c9a7" stroke-width="2.5" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                <circle cx="20" cy="8" r="3" fill="#ffbe0b" />
+            </svg>
+            Rent<span class="logo-dot">My</span>Things
+        </a>
+        <div class="nav-links">
+            <a href="index.html">Browse</a>
+            <a href="add-item.html">List an Item</a>
+            <a href="dashboard.html">Dashboard</a>
+        </div>
+        <div class="nav-actions">
+            <button class="nav-user-pill hidden" id="nav-user-pill" onclick="window.location.href='/dashboard.html'">
+                <div class="nav-avatar"><span id="nav-avatar-initial">?</span></div>
+                <span id="nav-user-name">User</span>
+            </button>
+            <button class="btn btn-ghost btn-sm hidden" id="nav-logout-btn" onclick="Auth.logout()">Logout</button>
+            <a href="auth.html" class="btn btn-primary btn-sm" id="nav-login-btn">Sign In</a>
+            <button class="hamburger" id="nav-hamburger"><span></span><span></span><span></span></button>
+        </div>
+    </nav>
+    <div class="mobile-menu hidden" id="mobile-menu">
+        <a href="index.html">Browse</a><a href="add-item.html">List an Item</a><a href="dashboard.html">Dashboard</a>
+        <div style="height:1px;background:var(--border);margin:.5rem 0"></div>
+        <a href="auth.html" id="mobile-login">Sign In</a>
+        <button class="hidden" id="mobile-logout" onclick="Auth.logout()">Logout</button>
+    </div>
+
+    <!-- Breadcrumb -->
+    <div class="item-hero">
+        <div style="max-width:1200px;margin:0 auto">
+            <nav style="font-size:.825rem;color:var(--text-muted);display:flex;align-items:center;gap:.5rem">
+                <a href="index.html" style="color:var(--text-muted);transition:var(--transition)"
+                    onmouseover="this.style.color='var(--primary)'"
+                    onmouseout="this.style.color='var(--text-muted)'">Home</a>
+                <span>›</span><span id="breadcrumb-cat" style="color:var(--text-secondary)">Items</span>
+                <span>›</span><span id="breadcrumb-title" style="color:var(--text-primary)">Loading…</span>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Main layout -->
+    <div class="item-layout" id="item-layout">
+        <!-- Left: image + info -->
+        <div>
+            <img id="item-main-img" class="item-main-img" src="" alt="Item image"
+                onerror="this.src='https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80'" />
+            <div class="img-thumbs" id="img-thumbs"></div>
+
+            <div class="item-info">
+                <div class="item-meta-row">
+                    <span class="badge badge-primary" id="item-cat-badge">Category</span>
+                    <span class="badge badge-muted" id="item-condition-badge">Condition</span>
+                    <span id="item-stars-row"></span>
+                </div>
+                <h1 class="item-info-title" id="item-title">Loading…</h1>
+                <p class="item-desc" id="item-desc">—</p>
+                <div class="item-attrs">
+                    <div class="item-attr">
+                        <div class="item-attr-label">Location</div>
+                        <div class="item-attr-val" id="item-location">—</div>
+                    </div>
+                    <div class="item-attr">
+                        <div class="item-attr-label">Price / Day</div>
+                        <div class="item-attr-val" id="item-ppd">—</div>
+                    </div>
+                    <div class="item-attr">
+                        <div class="item-attr-label">Condition</div>
+                        <div class="item-attr-val" id="item-cond">—</div>
+                    </div>
+                    <div class="item-attr">
+                        <div class="item-attr-label">Category</div>
+                        <div class="item-attr-val" id="item-cat">—</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: booking sidebar -->
+        <div>
+            <div class="booking-card">
+                <div class="booking-price-row">
+                    <span class="booking-price" id="side-price">₹—</span>
+                    <sub>per day</sub>
+                </div>
+
+                <!-- Owner -->
+                <div class="owner-card" id="owner-card">
+                    <div class="avatar avatar-md" id="owner-avatar">?</div>
+                    <div class="owner-info">
+                        <h4 id="owner-name">—</h4>
+                        <p id="owner-rating">Member since —</p>
+                    </div>
+                    <svg style="margin-left:auto;color:var(--text-muted)" width="16" height="16" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="9,18 15,12 9,6" />
+                    </svg>
+                </div>
+
+                <!-- Date picker -->
+                <div class="date-row">
+                    <div class="form-group">
+                        <label class="form-label">Start Date</label>
+                        <input type="date" class="form-input" id="start-date" onchange="calcTotal()" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">End Date</label>
+                        <input type="date" class="form-input" id="end-date" onchange="calcTotal()" />
+                    </div>
+                </div>
+
+                <div class="date-summary" id="date-summary" style="display:none">
+                    <span id="days-label">— days × ₹—</span>
+                    <span id="total-price">₹—</span>
+                </div>
+
+                <button class="btn btn-primary w-full btn-lg" id="book-btn" onclick="handleBooking()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="4" width="18" height="18" rx="2" />
+                        <line x1="16" y1="2" x2="16" y2="6" />
+                        <line x1="8" y1="2" x2="8" y2="6" />
+                        <line x1="3" y1="10" x2="21" y2="10" />
+                    </svg>
+                    Request to Book
+                </button>
+                <p style="text-align:center;font-size:.78rem;color:var(--text-muted);margin-top:.75rem">You won't be
+                    charged until the owner confirms.</p>
+
+                <!-- Message owner -->
+                <div class="divider"></div>
+                <button class="btn btn-ghost w-full" onclick="toast('Messaging coming soon!','info')">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                    </svg>
+                    Message Owner
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reviews section -->
+    <div class="reviews-section">
+        <div
+            style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem">
+            <h2 style="font-family:'Outfit',sans-serif;font-size:1.5rem;font-weight:800">Owner Reviews</h2>
+            <span id="reviews-count" class="badge badge-muted">0 reviews</span>
+        </div>
+        <div class="card" style="padding:0;overflow:hidden">
+            <div id="reviews-list">
+                <div class="empty-state">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="1.5">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                    </svg>
+                    <h3>No reviews yet</h3>
+                    <p>Reviews will appear here after completed rentals.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Booking success modal -->
+    <div class="modal-backdrop hidden" id="booking-modal">
+        <div class="modal" style="text-align:center">
+            <div style="font-size:3.5rem;margin-bottom:1rem">🎉</div>
+            <h3 class="modal-title" style="justify-content:center;margin-bottom:.5rem">Booking Request Sent!</h3>
+            <p style="color:var(--text-secondary);font-size:.9rem;margin-bottom:1.5rem">Your request has been sent to
+                the owner. You'll be notified once they respond.</p>
+            <div style="display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap">
+                <a href="dashboard.html" class="btn btn-primary">View My Bookings</a>
+                <button class="btn btn-ghost"
+                    onclick="document.getElementById('booking-modal').classList.add('hidden')">Stay Here</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container"></div>
+    <script src="utils.js"></script>
+    <script>
+        let currentItem = null;
+        let currentOwner = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initNavbar();
+            const id = new URLSearchParams(window.location.search).get('id');
+            if (!id) { window.location.href = '/index.html'; return; }
+            loadItem(id);
+            // Set min date to today
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('start-date').min = today;
+            document.getElementById('end-date').min = today;
+            setTimeout(hideLoader, 400);
+        });
+
+        function loadItem(id) {
+            currentItem = MockDB.getItemById(id);
+            if (!currentItem) { toast('Item not found', 'error'); setTimeout(() => window.location.href = '/index.html', 1500); return; }
+            currentOwner = MockDB.findUserById(currentItem.owner_id);
+            const cat = CATEGORIES.find(c => c.id === currentItem.category);
+
+            // Breadcrumb
+            document.getElementById('breadcrumb-cat').textContent = cat?.label || currentItem.category;
+            document.getElementById('breadcrumb-title').textContent = currentItem.title;
+            document.title = currentItem.title + ' – RentMyThings';
+
+            // Image
+            const img = document.getElementById('item-main-img');
+            img.src = currentItem.image_url || 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80';
+            img.alt = currentItem.title;
+
+            // Thumbnails (same image for demo)
+            const thumbs = document.getElementById('img-thumbs');
+            [currentItem.image_url].filter(Boolean).forEach((url, i) => {
+                const t = document.createElement('img');
+                t.src = url; t.className = 'img-thumb' + (i === 0 ? ' active' : '');
+                t.alt = 'View ' + (i + 1);
+                t.onclick = () => { img.src = url; document.querySelectorAll('.img-thumb').forEach(th => th.classList.remove('active')); t.classList.add('active'); };
+                thumbs.appendChild(t);
+            });
+
+            // Badges & title
+            document.getElementById('item-cat-badge').textContent = (cat?.emoji || '') + ' ' + (cat?.label || currentItem.category);
+            document.getElementById('item-condition-badge').textContent = currentItem.condition;
+            document.getElementById('item-title').textContent = currentItem.title;
+            document.getElementById('item-desc').textContent = currentItem.description;
+
+            // Ratings (owner)
+            const ownerRating = currentOwner?.rating || 0;
+            document.getElementById('item-stars-row').innerHTML = renderStars(Math.round(ownerRating)) + `<span class="rating-count">${ownerRating || 'New'}</span>`;
+
+            // Attrs
+            document.getElementById('item-location').textContent = currentItem.location;
+            document.getElementById('item-ppd').textContent = '₹' + currentItem.price_per_day.toLocaleString();
+            document.getElementById('item-cond').textContent = currentItem.condition;
+            document.getElementById('item-cat').textContent = cat?.label || currentItem.category;
+
+            // Sidebar price
+            document.getElementById('side-price').textContent = '₹' + currentItem.price_per_day.toLocaleString();
+
+            // Owner card
+            if (currentOwner) {
+                document.getElementById('owner-avatar').textContent = currentOwner.name.charAt(0).toUpperCase();
+                document.getElementById('owner-name').textContent = currentOwner.name;
+                const reviews = MockDB.getReviewsForUser(currentOwner._id);
+                document.getElementById('owner-rating').innerHTML = renderStars(Math.round(ownerRating)) + ` <span style="margin-left:4px;color:var(--text-muted);font-size:.78rem">${reviews.length} reviews</span>`;
+                document.getElementById('owner-card').onclick = () => { };
+            }
+
+            // Hide book button if this is the owner's own item
+            const currentUser = Auth.getUser();
+            if (currentUser?._id === currentItem.owner_id) {
+                document.getElementById('book-btn').textContent = 'This is your listing';
+                document.getElementById('book-btn').disabled = true;
+            }
+
+            loadReviews();
+        }
+
+        function calcTotal() {
+            const s = document.getElementById('start-date').value;
+            const e = document.getElementById('end-date').value;
+            const summary = document.getElementById('date-summary');
+            if (!s || !e || !currentItem) { summary.style.display = 'none'; return; }
+            const days = daysBetween(s, e);
+            if (days <= 0) { toast('End date must be after start date', 'warning'); summary.style.display = 'none'; return; }
+            const total = days * currentItem.price_per_day;
+            document.getElementById('days-label').textContent = `${days} day${days > 1 ? 's' : ''} × ₹${currentItem.price_per_day.toLocaleString()}`;
+            document.getElementById('total-price').textContent = '₹' + total.toLocaleString();
+            summary.style.display = 'flex';
+        }
+
+        function handleBooking() {
+            if (!Auth.isLoggedIn()) { window.location.href = '/auth.html?redirect=' + encodeURIComponent(window.location.href); return; }
+            const s = document.getElementById('start-date').value;
+            const e = document.getElementById('end-date').value;
+            if (!s || !e) { toast('Please select rental dates', 'warning'); return; }
+            if (daysBetween(s, e) <= 0) { toast('End date must be after start date', 'warning'); return; }
+            if (MockDB.isItemBooked(currentItem._id, s, e)) { toast('Item is already booked for these dates', 'error'); return; }
+
+            const user = Auth.getUser();
+            MockDB.createBooking({ item_id: currentItem._id, renter_id: user._id, start_date: s, end_date: e });
+            document.getElementById('booking-modal').classList.remove('hidden');
+        }
+
+        function loadReviews() {
+            if (!currentOwner) return;
+            const reviews = MockDB.getReviewsForUser(currentOwner._id);
+            const list = document.getElementById('reviews-list');
+            document.getElementById('reviews-count').textContent = reviews.length + ' review' + (reviews.length !== 1 ? 's' : '');
+
+            if (!reviews.length) return; // show empty state
+
+            list.innerHTML = reviews.map(r => {
+                const reviewer = MockDB.findUserById(r.reviewer_id);
+                return `<div class="review-item">
+          <div class="review-header">
+            <div class="review-author">
+              <div class="avatar avatar-sm" style="background:linear-gradient(135deg,var(--accent),var(--primary))">${(reviewer?.name || '?').charAt(0).toUpperCase()}</div>
+              ${reviewer?.name || 'Anonymous'}
+            </div>
+            <div style="display:flex;align-items:center;gap:.75rem">
+              ${renderStars(r.rating)}
+              <span class="review-date">${formatDate(r.createdAt)}</span>
+            </div>
+          </div>
+          ${r.comment ? `<p class="review-text">${r.comment}</p>` : ''}
+        </div>`;
+            }).join('');
+        }
+    </script>
+</body>
+
+</html>
