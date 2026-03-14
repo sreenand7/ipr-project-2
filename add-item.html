@@ -45,6 +45,45 @@
             gap: 1rem;
         }
 
+        /* Hide number input spinners */
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; appearance: textfield; }
+
+        /* Rental type toggle */
+        .rental-type-toggle {
+            display: flex;
+            gap: .35rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: .3rem;
+            margin-bottom: 1rem;
+        }
+        .rental-type-btn {
+            flex: 1;
+            padding: .5rem .75rem;
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: .82rem;
+            font-weight: 600;
+            border-radius: var(--radius-sm);
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: .4rem;
+        }
+        .rental-type-btn.active {
+            background: var(--primary);
+            color: #fff;
+            box-shadow: 0 2px 10px var(--primary-glow);
+        }
+        .rental-type-btn:not(.active):hover {
+            color: var(--text-primary);
+            background: rgba(255,255,255,.05);
+        }
+
         /* Image upload */
         .upload-zone {
             border: 2px dashed var(--border);
@@ -276,12 +315,25 @@
                     Pricing & Location
                 </div>
                 <div style="display:flex;flex-direction:column;gap:1.25rem;margin-bottom:2rem">
+                    <!-- Rental type toggle -->
+                    <div class="form-group">
+                        <label class="form-label">Rental Type *</label>
+                        <div class="rental-type-toggle">
+                            <button type="button" class="rental-type-btn active" id="type-daily" onclick="setRentalType('daily')">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                                Per Day
+                            </button>
+                            <button type="button" class="rental-type-btn" id="type-hourly" onclick="setRentalType('hourly')">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                Per Hour
+                            </button>
+                        </div>
+                    </div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label class="form-label">Rental Price per Day (₹) *</label>
-                            <input type="number" class="form-input" id="f-price" placeholder="e.g. 500" min="1"
-                                required />
-                            <span class="form-hint">Set a competitive daily rate. You can always change it later.</span>
+                            <label class="form-label" id="price-label">Rental Price per Day (₹) *</label>
+                            <input type="number" class="form-input" id="f-price" placeholder="e.g. 500" min="1" required />
+                            <span class="form-hint" id="price-hint">Set a competitive daily rate. You can always change it later.</span>
                         </div>
                         <div class="form-group">
                             <label class="form-label">Your Location *</label>
@@ -378,12 +430,30 @@
     <div id="toast-container"></div>
     <script src="utils.js"></script>
     <script>
+        let rentalType = 'daily'; // 'daily' | 'hourly'
+
+        function setRentalType(type) {
+            rentalType = type;
+            document.getElementById('type-daily').classList.toggle('active', type === 'daily');
+            document.getElementById('type-hourly').classList.toggle('active', type === 'hourly');
+            const isHourly = type === 'hourly';
+            document.getElementById('price-label').textContent = isHourly ? 'Rental Price per Hour (₹) *' : 'Rental Price per Day (₹) *';
+            document.getElementById('f-price').placeholder = isHourly ? 'e.g. 150' : 'e.g. 500';
+            document.getElementById('price-hint').textContent = isHourly
+                ? 'Great for items rented for a few hours (tools, equipment, etc.)'
+                : 'Set a competitive daily rate. You can always change it later.';
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             initNavbar();
             if (!Auth.isLoggedIn()) { window.location.href = 'auth.html?redirect=add-item.html'; return; }
 
-            // Prefill location if user has profile
+            // Prefill location if user has profile location
             const user = Auth.getUser();
+            const freshUser = MockDB.findUserById(user._id);
+            const loc = freshUser?.location || user?.location || '';
+            if (loc) document.getElementById('f-location').value = loc;
+
             setTimeout(hideLoader, 300);
         });
 
@@ -429,25 +499,36 @@
             const condition = document.getElementById('f-condition').value;
             const price = parseInt(document.getElementById('f-price').value);
             const location = document.getElementById('f-location').value.trim();
-            const imgUrl = document.getElementById('f-image-url').value.trim() ||
-                document.getElementById('preview-img').src ||
-                'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80';
-            const previewVisible = document.getElementById('preview-img').style.display !== 'none';
 
             if (!title || !desc || !category || !condition || !price || !location) {
                 toast('Please fill in all required fields', 'warning'); return;
             }
+            if (price < 1) { toast('Price must be at least ₹1/day', 'warning'); return; }
+
+            // Determine image URL: file upload > URL input > default
+            const previewImg = document.getElementById('preview-img');
+            const urlInput = document.getElementById('f-image-url').value.trim();
+            let imageUrl = 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80';
+            if (previewImg.style.display !== 'none' && previewImg.src && !previewImg.src.includes('data:') === false) {
+                imageUrl = previewImg.src; // base64 from file upload
+            } else if (urlInput) {
+                imageUrl = urlInput;
+            }
 
             const btn = document.getElementById('submit-btn');
-            btn.disabled = true; btn.textContent = 'Publishing…';
+            btn.disabled = true;
+            btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation:spin .8s linear infinite"><path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0"/></svg> Publishing…';
 
             const user = Auth.getUser();
             setTimeout(() => {
                 MockDB.createItem({
                     owner_id: user._id,
                     title, description: desc, category, condition,
-                    price_per_day: price, location,
-                    image_url: previewVisible ? document.getElementById('preview-img').src : (imgUrl || 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80')
+                    price_per_day: rentalType === 'daily' ? price : null,
+                    price_per_hour: rentalType === 'hourly' ? price : null,
+                    rental_type: rentalType,
+                    location,
+                    image_url: imageUrl
                 });
                 toast('Your listing is live! 🎉', 'success');
                 setTimeout(() => { window.location.href = 'dashboard.html'; }, 1000);

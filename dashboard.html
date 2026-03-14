@@ -350,6 +350,7 @@
             <div class="dash-user-info">
                 <h1 id="dash-name">Loading…</h1>
                 <p id="dash-email">—</p>
+                <p id="dash-member-since" style="color:var(--text-muted);font-size:.78rem;margin-top:.15rem"></p>
                 <div style="display:flex;align-items:center;gap:.75rem;margin-top:.4rem">
                     <span id="dash-rating-stars"></span>
                     <span id="dash-reviews-count" style="font-size:.8rem;color:var(--text-muted)"></span>
@@ -386,11 +387,11 @@
 
         <!-- Tabs -->
         <div class="dash-tabs">
-            <button class="dash-tab active" onclick="switchDashTab('profile')">👤 Profile</button>
-            <button class="dash-tab" onclick="switchDashTab('listings')">📦 My Listings</button>
-            <button class="dash-tab" onclick="switchDashTab('bookings')">🗓 My Bookings</button>
-            <button class="dash-tab" onclick="switchDashTab('requests')">📨 Requests</button>
-            <button class="dash-tab" onclick="switchDashTab('reviews')">⭐ Reviews</button>
+            <button class="dash-tab active" data-tab="profile" onclick="switchDashTab('profile',this)">👤 Profile</button>
+            <button class="dash-tab" data-tab="listings" onclick="switchDashTab('listings',this)">📦 My Listings</button>
+            <button class="dash-tab" data-tab="bookings" onclick="switchDashTab('bookings',this)">🗓 My Bookings</button>
+            <button class="dash-tab" data-tab="requests" onclick="switchDashTab('requests',this)">📨 Requests <span id="request-badge" style="display:none;background:var(--danger);color:#fff;border-radius:999px;font-size:.65rem;padding:.1rem .45rem;margin-left:.35rem;font-weight:800"></span></button>
+            <button class="dash-tab" data-tab="reviews" onclick="switchDashTab('reviews',this)">⭐ Reviews</button>
         </div>
 
         <!-- ── Tab: Profile ─────────────────────────────────────── -->
@@ -419,6 +420,14 @@
                             <label class="form-label">Email Address</label>
                             <input type="email" class="form-input" id="p-email" placeholder="your@email.com" disabled
                                 style="opacity:.6" />
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Your City / Area</label>
+                            <input type="text" class="form-input" id="p-location" placeholder="e.g. Bangalore" />
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Member Since</label>
+                            <input type="text" class="form-input" id="p-since" disabled style="opacity:.6" />
                         </div>
                     </div>
                     <button type="submit" class="btn btn-primary">Save Changes</button>
@@ -563,12 +572,22 @@
             document.getElementById('profile-big-avatar').textContent = initial;
             document.getElementById('p-name').value = currentUser.name || '';
             document.getElementById('p-email').value = currentUser.email || '';
+            const locEl = document.getElementById('p-location');
+            if (locEl) locEl.value = currentUser.location || '';
+            const sinceEl = document.getElementById('p-since');
+            if (sinceEl && currentUser.createdAt) sinceEl.value = new Date(currentUser.createdAt).toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' });
 
             const rating = fresh?.rating || 0;
             document.getElementById('dash-rating-stars').innerHTML = renderStars(Math.round(rating));
             const myReviews = MockDB.getReviewsForUser(currentUser._id);
             document.getElementById('dash-reviews-count').textContent = myReviews.length + ' review' + (myReviews.length !== 1 ? 's' : '');
             document.getElementById('stat-rating').textContent = rating || '—';
+
+            // Member since
+            const memberSince = document.getElementById('dash-member-since');
+            if (memberSince && currentUser.createdAt) {
+                memberSince.textContent = 'Member since ' + new Date(currentUser.createdAt).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' });
+            }
 
             // Stats
             const myItems = MockDB.getItems({ owner_id: currentUser._id });
@@ -578,17 +597,29 @@
             document.getElementById('stat-bookings').textContent = myBookings.length;
             document.getElementById('stat-requests').textContent = incomingRequests.length;
 
+            // Request badge
+            const badge = document.getElementById('request-badge');
+            if (badge) {
+                if (incomingRequests.length > 0) {
+                    badge.textContent = incomingRequests.length;
+                    badge.style.display = 'inline';
+                } else {
+                    badge.style.display = 'none';
+                }
+            }
+
             renderListings(myItems);
             renderMyBookings(myBookings);
             renderRequests();
             renderReviews(myReviews);
         }
 
-        function switchDashTab(tab) {
+        function switchDashTab(tab, el) {
             document.querySelectorAll('.tab-pane').forEach(p => p.style.display = 'none');
             document.querySelectorAll('.dash-tab').forEach(b => b.classList.remove('active'));
             document.getElementById('tab-' + tab).style.display = 'block';
-            event.target.classList.add('active');
+            if (el) el.classList.add('active');
+            else document.querySelector(`.dash-tab[data-tab="${tab}"]`)?.classList.add('active');
         }
 
         // ── Listings ────────────────────────────────────────
@@ -597,11 +628,14 @@
             if (!items.length) { el.innerHTML = emptyState('📦', 'No listings yet', 'Start earning by listing items you rarely use.'); return; }
             el.innerHTML = items.map(item => {
                 const cat = CATEGORIES.find(c => c.id === item.category);
+                const isHourly = item.rental_type === 'hourly';
+                const price = isHourly ? item.price_per_hour : item.price_per_day;
+                const unit = isHourly ? '/hr' : '/day';
                 return `<div class="my-item-row">
           <img class="my-item-img" src="${item.image_url || ''}" alt="${item.title}" onerror="this.src='https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=200&q=60'"/>
           <div class="my-item-info">
             <div class="my-item-title">${item.title}</div>
-            <div class="my-item-meta">${cat?.emoji || ''} ${cat?.label || item.category} &bull; ₹${item.price_per_day.toLocaleString()}/day &bull; ${item.location}</div>
+            <div class="my-item-meta">${cat?.emoji || ''} ${cat?.label || item.category} &bull; ₹${(price||0).toLocaleString()}${unit} &bull; ${item.location}</div>
           </div>
           <div class="my-item-actions">
             <button class="btn btn-ghost btn-sm" onclick="openEditModal('${item._id}')">
@@ -783,10 +817,11 @@
         function saveProfile(e) {
             e.preventDefault();
             const name = document.getElementById('p-name').value.trim();
+            const location = (document.getElementById('p-location')?.value || '').trim();
             if (!name) { toast('Name cannot be empty', 'warning'); return; }
-            MockDB.updateUser(currentUser._id, { name });
-            Auth.save(Auth.getToken(), { ...currentUser, name });
-            currentUser = { ...currentUser, name };
+            MockDB.updateUser(currentUser._id, { name, location });
+            Auth.save(Auth.getToken(), { ...currentUser, name, location });
+            currentUser = { ...currentUser, name, location };
             toast('Profile updated!', 'success');
             loadDashboard();
         }

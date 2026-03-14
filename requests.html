@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Item Requests – RentMyThings</title>
+  <link rel="stylesheet" href="main.css"/>
+  <style>
+    .req-layout{max-width:1100px;margin:0 auto;padding:2rem 2.5rem 4rem;position:relative;z-index:1}
+    .req-page-tabs{display:flex;gap:.35rem;border-bottom:1px solid var(--border);margin-bottom:2rem}
+    .req-page-tab{padding:.65rem 1.25rem;color:var(--text-secondary);font-size:.875rem;font-weight:600;background:none;border-bottom:2px solid transparent;transition:var(--transition);white-space:nowrap;margin-bottom:-1px}
+    .req-page-tab:hover{color:var(--text-primary)}
+    .req-page-tab.active{color:var(--primary);border-bottom-color:var(--primary)}
+    .req-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;transition:var(--transition-slow)}
+    .req-card:hover{border-color:var(--border-hover);box-shadow:var(--shadow-glow);transform:translateY(-2px)}
+    .req-card-header{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;margin-bottom:.85rem;flex-wrap:wrap}
+    .req-title{font-family:'Outfit',sans-serif;font-size:1.05rem;font-weight:700;color:var(--text-primary);margin-bottom:.25rem}
+    .req-desc{font-size:.875rem;color:var(--text-secondary);line-height:1.65;margin-bottom:1rem}
+    .req-meta{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center}
+    .req-meta-pill{display:inline-flex;align-items:center;gap:.35rem;padding:.25rem .7rem;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:var(--radius-full);font-size:.75rem;color:var(--text-secondary);font-weight:500}
+    .req-budget{font-family:'Outfit',sans-serif;font-size:1.1rem;font-weight:800;color:var(--secondary);white-space:nowrap}
+    .req-budget span{font-size:.75rem;font-weight:400;color:var(--text-muted)}
+    .req-footer{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem;margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border)}
+    .req-user{display:flex;align-items:center;gap:.6rem;font-size:.82rem;color:var(--text-muted)}
+    .req-user-avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;color:#fff;flex-shrink:0}
+    .offer-count{font-size:.75rem;color:var(--primary);font-weight:600}
+    .post-form-card{background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:2rem;margin-bottom:2.5rem}
+    .post-form-card h3{font-family:'Outfit',sans-serif;font-size:1.2rem;font-weight:800;margin-bottom:1.5rem;display:flex;align-items:center;gap:.6rem}
+    .post-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+    .filter-bar{display:flex;gap:.75rem;margin-bottom:1.5rem;flex-wrap:wrap;align-items:center}
+    .filter-bar .form-select,.filter-bar .form-input{flex:1;min-width:140px}
+    .offer-list{display:flex;flex-direction:column;gap:.75rem}
+    .offer-item{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-md);padding:1rem 1.25rem}
+    .offer-item-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.4rem;flex-wrap:wrap;gap:.5rem}
+    .offer-item-name{font-weight:600;font-size:.9rem}
+    .offer-item-price{font-family:'Outfit',sans-serif;font-weight:800;color:var(--secondary);font-size:.95rem}
+    .offer-item-msg{font-size:.82rem;color:var(--text-secondary);line-height:1.6;margin-top:.4rem;font-style:italic}
+    input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+    input[type=number]{-moz-appearance:textfield;appearance:textfield}
+    @media(max-width:768px){.req-layout{padding:1.5rem 1.25rem 3rem}.post-form-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="page-loader" id="page-loader"><div class="loader-ring"></div></div>
+  <div class="bg-blobs"><span></span><span></span><span></span></div>
+
+  <nav class="navbar" id="navbar">
+    <a href="index.html" class="nav-logo">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect width="28" height="28" rx="8" fill="rgba(0,201,167,0.15)"/><path d="M7 14l5 5 9-9" stroke="#00c9a7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="20" cy="8" r="3" fill="#ffbe0b"/></svg>
+      Rent<span class="logo-dot">My</span>Things
+    </a>
+    <div class="nav-links">
+      <a href="index.html">Browse</a>
+      <a href="requests.html" class="active">Requests</a>
+      <a href="add-item.html">List an Item</a>
+      <a href="dashboard.html">Dashboard</a>
+    </div>
+    <div class="nav-actions">
+      <button class="nav-user-pill hidden" id="nav-user-pill" onclick="window.location.href='dashboard.html'">
+        <div class="nav-avatar"><span id="nav-avatar-initial">?</span></div>
+        <span id="nav-user-name">User</span>
+      </button>
+      <button class="btn btn-ghost btn-sm hidden" id="nav-logout-btn" onclick="Auth.logout()">Logout</button>
+      <a href="auth.html" class="btn btn-primary btn-sm" id="nav-login-btn">Sign In</a>
+      <button class="hamburger" id="nav-hamburger"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+  <div class="mobile-menu hidden" id="mobile-menu">
+    <a href="index.html">Browse Items</a>
+    <a href="requests.html">Item Requests</a>
+    <a href="add-item.html">List an Item</a>
+    <a href="dashboard.html">Dashboard</a>
+    <div style="height:1px;background:var(--border);margin:.5rem 0"></div>
+    <a href="auth.html" id="mobile-login">Sign In / Register</a>
+    <button id="mobile-logout" class="hidden" onclick="Auth.logout()">Logout</button>
+  </div>
+
+  <div class="req-layout">
+    <div style="margin-bottom:2rem">
+      <span class="section-label">Community</span>
+      <h1 class="section-title" style="text-align:left;margin-bottom:.5rem">Item <span class="highlight">Requests</span></h1>
+      <p style="color:var(--text-secondary);font-size:.95rem">Can't find what you need? Post a request and let owners with matching items reach out to you.</p>
+    </div>
+
+    <div class="req-page-tabs">
+      <button class="req-page-tab active" data-tab="browse" onclick="switchTab('browse',this)">📋 Browse Requests</button>
+      <button class="req-page-tab" data-tab="post"   onclick="switchTab('post',this)">✏️ Post a Request</button>
+      <button class="req-page-tab" data-tab="mine"   onclick="switchTab('mine',this)">👤 My Requests</button>
+    </div>
+
+    <!-- Browse -->
+    <div id="tab-browse">
+      <div class="filter-bar">
+        <input type="text" class="form-input" id="req-search" placeholder="🔍 Search requests…" oninput="renderBrowse()"/>
+        <select class="form-select" id="req-cat-filter" onchange="renderBrowse()" style="max-width:180px">
+          <option value="">All Categories</option>
+          <option value="cameras">📸 Cameras</option>
+          <option value="tools">🔧 Power Tools</option>
+          <option value="camping">⛺ Camping Gear</option>
+          <option value="electronics">🎮 Electronics</option>
+          <option value="sports">🚴 Sports</option>
+          <option value="music">🎸 Music</option>
+          <option value="vehicles">🚗 Vehicles</option>
+          <option value="kitchen">🍳 Kitchen</option>
+        </select>
+        <select class="form-select" id="req-status-filter" onchange="renderBrowse()" style="max-width:150px">
+          <option value="open">Open Requests</option>
+          <option value="">All</option>
+          <option value="fulfilled">Fulfilled</option>
+        </select>
+      </div>
+      <div class="grid-auto" id="requests-grid"></div>
+    </div>
+
+    <!-- Post -->
+    <div id="tab-post" style="display:none">
+      <div class="post-form-card">
+        <h3>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Post an Item Request
+        </h3>
+        <form id="post-req-form" onsubmit="submitRequest(event)" novalidate>
+          <div style="display:flex;flex-direction:column;gap:1.1rem">
+            <div class="form-group">
+              <label class="form-label">What do you need? *</label>
+              <input type="text" class="form-input" id="req-title" placeholder="e.g. Need a projector for a 2-day event" required maxlength="100"/>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Describe your requirement *</label>
+              <textarea class="form-textarea" id="req-desc" placeholder="Describe the item, required specs, how you'll use it…" required maxlength="400" style="min-height:100px"></textarea>
+            </div>
+            <div class="post-form-grid">
+              <div class="form-group">
+                <label class="form-label">Category *</label>
+                <select class="form-select" id="req-category" required>
+                  <option value="">Choose category…</option>
+                  <option value="cameras">📸 Cameras</option>
+                  <option value="tools">🔧 Power Tools</option>
+                  <option value="camping">⛺ Camping Gear</option>
+                  <option value="electronics">🎮 Electronics</option>
+                  <option value="sports">🚴 Sports</option>
+                  <option value="music">🎸 Music</option>
+                  <option value="vehicles">🚗 Vehicles</option>
+                  <option value="kitchen">🍳 Kitchen</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Your Location *</label>
+                <input type="text" class="form-input" id="req-location" placeholder="City or area" required/>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Budget per Day (₹) *</label>
+                <input type="number" class="form-input" id="req-budget" placeholder="e.g. 500" min="1" required/>
+                <span class="form-hint">Max you're willing to pay per day.</span>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Need it from *</label>
+                <input type="date" class="form-input" id="req-from" required/>
+              </div>
+            </div>
+            <div class="form-group" style="max-width:260px">
+              <label class="form-label">Need it until *</label>
+              <input type="date" class="form-input" id="req-to" required/>
+            </div>
+            <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-top:.5rem">
+              <button type="submit" class="btn btn-primary btn-lg" id="post-req-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                Post Request
+              </button>
+              <button type="button" class="btn btn-ghost" onclick="switchTab('browse',document.querySelector('[data-tab=browse]'))">Cancel</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Mine -->
+    <div id="tab-mine" style="display:none">
+      <div id="my-requests-list"></div>
+    </div>
+  </div>
+
+  <!-- Offer Modal -->
+  <div class="modal-backdrop hidden" id="offer-modal">
+    <div class="modal" style="max-width:520px">
+      <div class="modal-header">
+        <h3 class="modal-title">Make an Offer</h3>
+        <button class="modal-close" onclick="closeOfferModal()">✕</button>
+      </div>
+      <p style="font-size:.875rem;color:var(--text-secondary);margin-bottom:1.25rem">Responding to: <strong id="offer-req-title">—</strong></p>
+      <div style="display:flex;flex-direction:column;gap:1.1rem">
+        <div class="form-group">
+          <label class="form-label">Your Item Name *</label>
+          <input type="text" class="form-input" id="offer-item-name" placeholder="e.g. Epson HD Projector"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Your Offered Price per Day (₹) *</label>
+          <input type="number" class="form-input" id="offer-price" placeholder="e.g. 400" min="1"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Message to requester (optional)</label>
+          <textarea class="form-textarea" id="offer-message" placeholder="Tell them about your item, condition, pickup details…" style="min-height:80px"></textarea>
+        </div>
+        <div style="display:flex;gap:.75rem;justify-content:flex-end">
+          <button class="btn btn-ghost" onclick="closeOfferModal()">Cancel</button>
+          <button class="btn btn-primary" onclick="submitOffer()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            Send Offer
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- View Offers Modal -->
+  <div class="modal-backdrop hidden" id="view-offers-modal">
+    <div class="modal" style="max-width:560px">
+      <div class="modal-header">
+        <h3 class="modal-title">Offers Received</h3>
+        <button class="modal-close" onclick="document.getElementById('view-offers-modal').classList.add('hidden')">✕</button>
+      </div>
+      <p style="font-size:.875rem;color:var(--text-secondary);margin-bottom:1.25rem">For: <strong id="view-offers-req-title">—</strong></p>
+      <div id="view-offers-list" class="offer-list"></div>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+  <script src="utils.js"></script>
+  <script>
+    let currentUser = null;
+    let offerTargetReqId = null;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initNavbar();
+      currentUser = Auth.getUser();
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('req-from').min = today;
+      document.getElementById('req-to').min   = today;
+      if (currentUser) {
+        const fresh = MockDB.findUserById(currentUser._id);
+        const loc = fresh?.location || currentUser.location || '';
+        if (loc) document.getElementById('req-location').value = loc;
+      }
+      const tab = new URLSearchParams(window.location.search).get('tab');
+      if (tab === 'post') {
+        if (!Auth.isLoggedIn()) { window.location.href = 'auth.html?redirect=requests.html%3Ftab%3Dpost'; return; }
+        switchTab('post', document.querySelector('[data-tab="post"]'));
+      } else if (tab === 'mine') {
+        switchTab('mine', document.querySelector('[data-tab="mine"]'));
+      }
+      renderBrowse();
+      renderMine();
+      setTimeout(hideLoader, 350);
+    });
+
+    function switchTab(tab, el) {
+      ['browse','post','mine'].forEach(t => document.getElementById('tab-'+t).style.display = 'none');
+      document.querySelectorAll('.req-page-tab').forEach(b => b.classList.remove('active'));
+      document.getElementById('tab-'+tab).style.display = 'block';
+      if (el) el.classList.add('active');
+      else document.querySelector(`[data-tab="${tab}"]`)?.classList.add('active');
+    }
+
+    function renderBrowse() {
+      const kw     = document.getElementById('req-search').value.trim().toLowerCase();
+      const cat    = document.getElementById('req-cat-filter').value;
+      const status = document.getElementById('req-status-filter').value;
+      let reqs = MockDB.getRequests({ status: status || undefined, category: cat || undefined });
+      if (kw) reqs = reqs.filter(r => r.title.toLowerCase().includes(kw) || r.description.toLowerCase().includes(kw));
+      const grid = document.getElementById('requests-grid');
+      if (!reqs.length) {
+        grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1">
+          <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>
+          <h3>No requests found</h3><p>Be the first to post one!</p>
+          <button class="btn btn-outline" onclick="switchTab('post',document.querySelector('[data-tab=post]'))">Post a Request</button>
+        </div>`;
+        return;
+      }
+      grid.innerHTML = reqs.map(renderRequestCard).join('');
+    }
+
+    function renderRequestCard(r) {
+      const requester      = MockDB.findUserById(r.requester_id);
+      const cat            = CATEGORIES.find(c => c.id === r.category);
+      const offers         = MockDB.getOffersForRequest(r._id);
+      const isOwn          = currentUser && currentUser._id === r.requester_id;
+      const alreadyOffered = currentUser && MockDB.hasOffered(currentUser._id, r._id);
+      const isFulfilled    = r.status === 'fulfilled';
+      const safeName = (requester?.name || 'Anonymous').replace(/'/g,"&#39;");
+      const safeTitle = r.title.replace(/'/g,"&#39;");
+      return `<div class="req-card">
+        <div class="req-card-header">
+          <div style="flex:1;min-width:0">
+            <div class="req-title">${r.title}</div>
+            <div class="req-meta" style="margin-top:.35rem">
+              ${cat ? `<span class="req-meta-pill">${cat.emoji} ${cat.label}</span>` : ''}
+              <span class="req-meta-pill">📍 ${r.location}</span>
+              ${r.needed_from ? `<span class="req-meta-pill">📅 ${formatDate(r.needed_from)} → ${formatDate(r.needed_to)}</span>` : ''}
+            </div>
+          </div>
+          <div style="text-align:right;flex-shrink:0">
+            <div class="req-budget">₹${(r.budget_per_day||0).toLocaleString()} <span>/day budget</span></div>
+            <span class="badge ${isFulfilled ? 'badge-success' : 'badge-primary'}" style="margin-top:.4rem;display:inline-flex">
+              ${isFulfilled ? '✓ Fulfilled' : '● Open'}
+            </span>
+          </div>
+        </div>
+        <p class="req-desc">${r.description}</p>
+        <div class="req-footer">
+          <div class="req-user">
+            <div class="req-user-avatar">${requester?.name?.charAt(0).toUpperCase() || '?'}</div>
+            <span>${isOwn ? '<strong>You</strong>' : safeName}</span>
+            <span>•</span><span>${formatDate(r.createdAt)}</span>
+          </div>
+          <div style="display:flex;gap:.6rem;align-items:center;flex-wrap:wrap">
+            ${offers.length > 0 ? `<span class="offer-count">💬 ${offers.length} offer${offers.length>1?'s':''}</span>` : ''}
+            ${isOwn
+              ? `<button class="btn btn-ghost btn-sm" onclick="openViewOffers('${r._id}','${safeTitle}')">View Offers (${offers.length})</button>
+                 <button class="btn btn-danger btn-sm" onclick="deleteMyRequest('${r._id}')">Delete</button>`
+              : (!isFulfilled && currentUser
+                  ? (alreadyOffered
+                      ? `<span class="badge badge-muted">✓ Offer sent</span>`
+                      : `<button class="btn btn-primary btn-sm" onclick="openOfferModal('${r._id}','${safeTitle}')">
+                           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                           Make an Offer
+                         </button>`)
+                  : (!currentUser && !isFulfilled ? `<a href="auth.html?redirect=requests.html" class="btn btn-outline btn-sm">Sign in to offer</a>` : ''))
+            }
+          </div>
+        </div>
+      </div>`;
+    }
+
+    function renderMine() {
+      const el = document.getElementById('my-requests-list');
+      if (!currentUser) {
+        el.innerHTML = `<div class="empty-state"><div style="font-size:2rem">🔒</div><h3>Sign in to see your requests</h3><a href="auth.html?redirect=requests.html%3Ftab%3Dmine" class="btn btn-primary">Sign In</a></div>`;
+        return;
+      }
+      const mine = MockDB.getRequests({ requester_id: currentUser._id });
+      if (!mine.length) {
+        el.innerHTML = `<div class="empty-state"><div style="font-size:2.5rem">📋</div><h3>No requests yet</h3><p>Post your first request and let owners come to you.</p><button class="btn btn-primary" onclick="switchTab('post',document.querySelector('[data-tab=post]'))">Post a Request</button></div>`;
+        return;
+      }
+      el.innerHTML = `<div style="display:flex;flex-direction:column;gap:1rem">${mine.map(renderRequestCard).join('')}</div>`;
+    }
+
+    function deleteMyRequest(id) {
+      if (!confirm('Delete this request?')) return;
+      MockDB.deleteRequest(id);
+      toast('Request deleted','info');
+      renderBrowse(); renderMine();
+    }
+
+    function submitRequest(e) {
+      e.preventDefault();
+      if (!Auth.isLoggedIn()) { window.location.href='auth.html?redirect=requests.html%3Ftab%3Dpost'; return; }
+      const title    = document.getElementById('req-title').value.trim();
+      const desc     = document.getElementById('req-desc').value.trim();
+      const category = document.getElementById('req-category').value;
+      const location = document.getElementById('req-location').value.trim();
+      const budget   = parseInt(document.getElementById('req-budget').value);
+      const from     = document.getElementById('req-from').value;
+      const to       = document.getElementById('req-to').value;
+      if (!title||!desc||!category||!location||!budget||!from||!to){toast('Please fill in all required fields','warning');return;}
+      if (new Date(from) > new Date(to)){toast('End date must be after start date','warning');return;}
+      const btn = document.getElementById('post-req-btn');
+      btn.disabled = true;
+      btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation:spin .8s linear infinite"><path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0"/></svg> Posting…';
+      setTimeout(() => {
+        MockDB.createRequest({requester_id:currentUser._id,title,description:desc,category,location,budget_per_day:budget,needed_from:from,needed_to:to});
+        toast('Request posted! 🎉','success');
+        btn.disabled = false;
+        btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Post Request';
+        document.getElementById('post-req-form').reset();
+        renderBrowse(); renderMine();
+        switchTab('mine', document.querySelector('[data-tab="mine"]'));
+      }, 600);
+    }
+
+    function openOfferModal(reqId, reqTitle) {
+      if (!Auth.isLoggedIn()){window.location.href='auth.html?redirect=requests.html';return;}
+      offerTargetReqId = reqId;
+      document.getElementById('offer-req-title').textContent = reqTitle;
+      document.getElementById('offer-item-name').value = '';
+      document.getElementById('offer-price').value = '';
+      document.getElementById('offer-message').value = '';
+      document.getElementById('offer-modal').classList.remove('hidden');
+    }
+    function closeOfferModal(){document.getElementById('offer-modal').classList.add('hidden');offerTargetReqId=null;}
+
+    function submitOffer() {
+      const itemName = document.getElementById('offer-item-name').value.trim();
+      const price    = parseInt(document.getElementById('offer-price').value);
+      const message  = document.getElementById('offer-message').value.trim();
+      if (!itemName||!price){toast('Please fill in item name and price','warning');return;}
+      MockDB.createOffer({request_id:offerTargetReqId,offerer_id:currentUser._id,item_name:itemName,offered_price:price,message});
+      closeOfferModal();
+      toast('Offer sent! The requester will see it. 📨','success');
+      renderBrowse(); renderMine();
+    }
+
+    function openViewOffers(reqId, reqTitle) {
+      document.getElementById('view-offers-req-title').textContent = reqTitle;
+      const offers = MockDB.getOffersForRequest(reqId);
+      const list   = document.getElementById('view-offers-list');
+      if (!offers.length) {
+        list.innerHTML = `<div class="empty-state" style="padding:2rem"><div style="font-size:1.5rem">📭</div><h3>No offers yet</h3><p>Check back soon.</p></div>`;
+      } else {
+        list.innerHTML = offers.map(o => {
+          const offerer = MockDB.findUserById(o.offerer_id);
+          return `<div class="offer-item">
+            <div class="offer-item-header">
+              <div style="display:flex;align-items:center;gap:.6rem">
+                <div class="req-user-avatar">${offerer?.name?.charAt(0).toUpperCase()||'?'}</div>
+                <div>
+                  <div class="offer-item-name">${o.item_name}</div>
+                  <div style="font-size:.75rem;color:var(--text-muted)">by ${offerer?.name||'Unknown'} • ${formatDate(o.createdAt)}</div>
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;gap:.6rem">
+                <span class="offer-item-price">₹${(o.offered_price||0).toLocaleString()}<span style="font-size:.72rem;font-weight:400;color:var(--text-muted)">/day</span></span>
+                ${o.status==='accepted'
+                  ? `<span class="badge badge-success">✓ Accepted</span>`
+                  : `<button class="btn btn-sm" style="background:rgba(34,197,94,.15);color:var(--success);border:1px solid rgba(34,197,94,.3)" onclick="acceptOffer('${o._id}','${reqId}')">Accept</button>`}
+              </div>
+            </div>
+            ${o.message?`<p class="offer-item-msg">"${o.message}"</p>`:''}
+          </div>`;
+        }).join('');
+      }
+      document.getElementById('view-offers-modal').classList.remove('hidden');
+    }
+
+    function acceptOffer(offerId, reqId) {
+      MockDB.updateOfferStatus(offerId,'accepted');
+      toast('Offer accepted! Reach out to arrange pickup. 🎉','success');
+      document.getElementById('view-offers-modal').classList.add('hidden');
+      renderBrowse(); renderMine();
+    }
+  </script>
+</body>
+</html>

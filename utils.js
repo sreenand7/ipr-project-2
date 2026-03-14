@@ -121,31 +121,53 @@ function getCategoryLabel(id) {
 const MockDB = {
   // Seed users
   _users: JSON.parse(localStorage.getItem('rmt_mock_users') || 'null') || [
-    { _id: 'u1', name: 'Arjun Sharma', email: 'arjun@example.com', password: 'password', rating: 4.8, profile_photo: null, createdAt: '2025-01-10' },
-    { _id: 'u2', name: 'Priya Nair',   email: 'priya@example.com', password: 'password', rating: 4.5, profile_photo: null, createdAt: '2025-02-05' },
-    { _id: 'u3', name: 'Rohan Das',    email: 'rohan@example.com', password: 'password', rating: 4.2, profile_photo: null, createdAt: '2025-03-01' },
+    { _id: 'u1', name: 'Arjun Sharma',  email: 'arjun@example.com', password: 'password', rating: 4.8, location: 'Bangalore', profile_photo: null, createdAt: '2025-01-10' },
+    { _id: 'u2', name: 'Priya Nair',    email: 'priya@example.com', password: 'password', rating: 4.5, location: 'Chennai',   profile_photo: null, createdAt: '2025-02-05' },
+    { _id: 'u3', name: 'Rohan Das',     email: 'rohan@example.com', password: 'password', rating: 4.2, location: 'Mumbai',    profile_photo: null, createdAt: '2025-03-01' },
   ],
 
   // Seed items
   _items: JSON.parse(localStorage.getItem('rmt_mock_items') || 'null') || [
-    { _id: 'i1', owner_id:'u1', title:'Sony A7III Camera', description:'Full-frame mirrorless camera with 28-70mm kit lens.',      category:'cameras',     price_per_day:800,  condition:'Excellent', location:'Bangalore', image_url:'https://images.unsplash.com/photo-1601979031925-424e53b6caaa?w=600&q=80', available:true, createdAt:'2025-04-01' },
-    { _id: 'i2', owner_id:'u2', title:'Bosch Drill Set',   description:'Professional cordless drill with full accessory kit.',    category:'tools',       price_per_day:200,  condition:'Good',      location:'Chennai',   image_url:'https://images.unsplash.com/photo-1504148455328-c376907d081c?w=600&q=80', available:true, createdAt:'2025-04-03' },
-    { _id: 'i3', owner_id:'u1', title:'Camping Tent (4P)', description:'4-person dome tent, waterproof, easy setup.',             category:'camping',     price_per_day:350,  condition:'Good',      location:'Bangalore', image_url:'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=600&q=80', available:true, createdAt:'2025-04-05' },
-    { _id: 'i4', owner_id:'u3', title:'DJI Mini 3 Drone',  description:'Foldable drone with 4K video and 30min flight time.',    category:'electronics', price_per_day:1200, condition:'Excellent', location:'Mumbai',    image_url:'https://images.unsplash.com/photo-1473968512647-3e447244af8f?w=600&q=80', available:true, createdAt:'2025-04-06' },
-    { _id: 'i5', owner_id:'u2', title:'Mountain Bike',     description:'21-speed MTB, suitable for trails and city riding.',      category:'sports',      price_per_day:250,  condition:'Good',      location:'Chennai',   image_url:'https://images.unsplash.com/photo-1558583055-d7ac00b1adca?w=600&q=80', available:true, createdAt:'2025-04-07' },
-    { _id: 'i6', owner_id:'u3', title:'GoPro Hero 11',     description:'Action camera with waterproof housing and accessories.',  category:'cameras',     price_per_day:500,  condition:'Excellent', location:'Mumbai',    image_url:'https://images.unsplash.com/photo-1564466809058-bf4114d55352?w=600&q=80', available:true, createdAt:'2025-04-08' },
-    { _id: 'i7', owner_id:'u1', title:'Gibson Acoustic Guitar','description':'Full-size acoustic guitar with carrying case.',      category:'music',       price_per_day:300,  condition:'Good',      location:'Bangalore', image_url:'https://images.unsplash.com/photo-1510915361894-db8b60106cb1?w=600&q=80', available:true, createdAt:'2025-04-09' },
-    { _id: 'i8', owner_id:'u2', title:'Air Compressor',    description:'100L professional air compressor, 10 bar max pressure.', category:'tools',       price_per_day:450,  condition:'Excellent', location:'Chennai',   image_url:'https://images.unsplash.com/photo-1504221507732-5246c045949b?w=600&q=80', available:true, createdAt:'2025-04-10' },
+    { _id: 'i1',  owner_id:'u1', title:'Sony A7III Camera',         description:'Full-frame mirrorless camera with 28-70mm kit lens. Perfect for events and portraits.',     category:'cameras',     price_per_day:800,  condition:'Excellent', location:'Bangalore', image_url:'https://images.unsplash.com/photo-1601979031925-424e53b6caaa?w=600&q=80', available:true, createdAt:'2025-04-01' },
+    { _id: 'i2',  owner_id:'u2', title:'Bosch Drill Set',           description:'Professional cordless drill with full accessory kit. 18V, includes two batteries.',          category:'tools',       price_per_day:200,  condition:'Good',      location:'Chennai',   image_url:'https://images.unsplash.com/photo-1504148455328-c376907d081c?w=600&q=80', available:true, createdAt:'2025-04-03' },
+    { _id: 'i3',  owner_id:'u1', title:'Camping Tent (4 Person)',   description:'4-person dome tent, waterproof rated 3000mm, easy 15-min setup, includes ground sheet.',     category:'camping',     price_per_day:350,  condition:'Good',      location:'Bangalore', image_url:'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=600&q=80', available:true, createdAt:'2025-04-05' },
+    { _id: 'i4',  owner_id:'u3', title:'DJI Mini 3 Drone',          description:'Foldable drone with 4K video, 30min flight time. Includes carrying case and extra battery.', category:'electronics', price_per_day:1200, condition:'Excellent', location:'Mumbai',    image_url:'https://images.unsplash.com/photo-1473968512647-3e447244af8f?w=600&q=80', available:true, createdAt:'2025-04-06' },
+    { _id: 'i5',  owner_id:'u2', title:'Mountain Bike',             description:'21-speed MTB, suitable for trails and city riding. Helmet included.',                        category:'sports',      price_per_day:250,  condition:'Good',      location:'Chennai',   image_url:'https://images.unsplash.com/photo-1558583055-d7ac00b1adca?w=600&q=80', available:true, createdAt:'2025-04-07' },
+    { _id: 'i6',  owner_id:'u3', title:'GoPro Hero 11',             description:'Action camera with waterproof housing, head strap, chest mount and spare batteries.',        category:'cameras',     price_per_day:500,  condition:'Excellent', location:'Mumbai',    image_url:'https://images.unsplash.com/photo-1564466809058-bf4114d55352?w=600&q=80', available:true, createdAt:'2025-04-08' },
+    { _id: 'i7',  owner_id:'u1', title:'Gibson Acoustic Guitar',    description:'Full-size dreadnought acoustic guitar with carrying case and spare strings.',                category:'music',       price_per_day:300,  condition:'Good',      location:'Bangalore', image_url:'https://images.unsplash.com/photo-1510915361894-db8b60106cb1?w=600&q=80', available:true, createdAt:'2025-04-09' },
+    { _id: 'i8',  owner_id:'u2', title:'Air Compressor',            description:'100L professional air compressor, 10 bar max pressure. Ideal for workshops.',               category:'tools',       price_per_day:450,  condition:'Excellent', location:'Chennai',   image_url:'https://images.unsplash.com/photo-1504221507732-5246c045949b?w=600&q=80', available:true, createdAt:'2025-04-10' },
+    { _id: 'i9',  owner_id:'u3', title:'Epson Projector HD',        description:'1080p projector, 3500 lumens, HDMI+USB. Great for presentations and outdoor movie nights.', category:'electronics', price_per_day:600,  condition:'Excellent', location:'Mumbai',    image_url:'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=600&q=80', available:true, createdAt:'2025-04-11' },
+    { _id: 'i10', owner_id:'u1', title:'Camping Sleeping Bags (×2)', description:'Two mummy sleeping bags rated to -5°C. Compression sacks included.',                       category:'camping',     price_per_day:180,  condition:'Good',      location:'Bangalore', image_url:'https://images.unsplash.com/photo-1517824806704-9040b037703b?w=600&q=80', available:true, createdAt:'2025-04-12' },
+    { _id: 'i11', owner_id:'u2', title:'Canon EOS 250D + Lens Kit', description:'Entry-level DSLR with 18-55mm and 50mm f/1.8 lenses. Great for beginners.',                 category:'cameras',     price_per_day:450,  condition:'Good',      location:'Chennai',   image_url:'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=600&q=80', available:true, createdAt:'2025-04-13' },
+    { _id: 'i12', owner_id:'u3', title:'Electric Scooter',          description:'Ather 450X electric scooter, 80km range per charge. Helmet and charger included.',           category:'vehicles',    price_per_day:700,  condition:'Excellent', location:'Mumbai',    image_url:'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=600&q=80', available:true, createdAt:'2025-04-14' },
   ],
 
-  _bookings: JSON.parse(localStorage.getItem('rmt_mock_bookings') || '[]'),
-  _reviews:  JSON.parse(localStorage.getItem('rmt_mock_reviews')  || '[]'),
+  _bookings: JSON.parse(localStorage.getItem('rmt_mock_bookings') || 'null') || [
+    { _id: 'b1', item_id:'i1', renter_id:'u2', start_date:'2025-03-10', end_date:'2025-03-12', booking_status:'completed', createdAt:'2025-03-08' },
+    { _id: 'b2', item_id:'i5', renter_id:'u1', start_date:'2025-03-20', end_date:'2025-03-22', booking_status:'completed', createdAt:'2025-03-18' },
+  ],
+  _reviews: JSON.parse(localStorage.getItem('rmt_mock_reviews') || 'null') || [
+    { _id: 'r1', reviewer_id:'u2', reviewed_user_id:'u1', booking_id:'b1', rating:5, comment:'Arjun was super helpful and the camera was in perfect condition. Would rent again!', createdAt:'2025-03-13' },
+    { _id: 'r2', reviewer_id:'u1', reviewed_user_id:'u2', booking_id:'b2', rating:4, comment:'Priya was responsive and the bike was exactly as described. Great experience!', createdAt:'2025-03-23' },
+  ],
+
+  // Item Requests — users asking for items they need
+  _requests: JSON.parse(localStorage.getItem('rmt_mock_requests') || 'null') || [
+    { _id: 'req1', requester_id:'u2', title:'Need a Projector for 2 days', description:'Looking to rent a HD projector for a college event on the weekend. Need HDMI connectivity.', category:'electronics', location:'Chennai',   budget_per_day:400, needed_from:'2025-05-10', needed_to:'2025-05-12', status:'open', createdAt:'2025-04-20' },
+    { _id: 'req2', requester_id:'u3', title:'Looking for a DSLR Camera', description:'Need a camera with at least 24MP for a product photoshoot. Lens kit preferred.', category:'cameras',     location:'Mumbai',    budget_per_day:600, needed_from:'2025-05-15', needed_to:'2025-05-16', status:'open', createdAt:'2025-04-21' },
+    { _id: 'req3', requester_id:'u1', title:'Need Power Drill for home work', description:'Small home renovation project. Any decent cordless drill will do.', category:'tools',       location:'Bangalore', budget_per_day:150, needed_from:'2025-05-08', needed_to:'2025-05-09', status:'open', createdAt:'2025-04-22' },
+  ],
+
+  // Offers — item owners responding to requests
+  _offers: JSON.parse(localStorage.getItem('rmt_mock_offers') || 'null') || [],
 
   persist() {
     localStorage.setItem('rmt_mock_users',    JSON.stringify(this._users));
     localStorage.setItem('rmt_mock_items',    JSON.stringify(this._items));
     localStorage.setItem('rmt_mock_bookings', JSON.stringify(this._bookings));
     localStorage.setItem('rmt_mock_reviews',  JSON.stringify(this._reviews));
+    localStorage.setItem('rmt_mock_requests', JSON.stringify(this._requests));
+    localStorage.setItem('rmt_mock_offers',   JSON.stringify(this._offers));
   },
 
   genId() { return '_' + Math.random().toString(36).substr(2, 9); },
@@ -225,6 +247,58 @@ const MockDB = {
   },
   getReviewsForUser(userId) { return this._reviews.filter(r => r.reviewed_user_id === userId).reverse(); },
   hasReviewed(reviewerId, bookingId) { return this._reviews.some(r => r.reviewer_id === reviewerId && r.booking_id === bookingId); },
+
+  // ── Item Requests ────────────────────────────────────────────────────────
+  getRequests(filters = {}) {
+    let reqs = [...this._requests];
+    if (filters.category) reqs = reqs.filter(r => r.category === filters.category);
+    if (filters.location) reqs = reqs.filter(r => r.location.toLowerCase().includes(filters.location.toLowerCase()));
+    if (filters.keyword)  reqs = reqs.filter(r => r.title.toLowerCase().includes(filters.keyword.toLowerCase()) || r.description.toLowerCase().includes(filters.keyword.toLowerCase()));
+    if (filters.status)   reqs = reqs.filter(r => r.status === filters.status);
+    if (filters.requester_id) reqs = reqs.filter(r => r.requester_id === filters.requester_id);
+    return reqs.reverse();
+  },
+  getRequestById(id) { return this._requests.find(r => r._id === id); },
+  createRequest(data) {
+    const req = { _id: this.genId(), ...data, status: 'open', createdAt: new Date().toISOString() };
+    this._requests.push(req); this.persist(); return req;
+  },
+  updateRequest(id, data) {
+    const i = this._requests.findIndex(r => r._id === id);
+    if (i === -1) return null;
+    this._requests[i] = { ...this._requests[i], ...data };
+    this.persist(); return this._requests[i];
+  },
+  deleteRequest(id) {
+    const i = this._requests.findIndex(r => r._id === id);
+    if (i !== -1) { this._requests.splice(i, 1); this.persist(); }
+  },
+
+  // ── Offers ───────────────────────────────────────────────────────────────
+  getOffersForRequest(requestId) { return this._offers.filter(o => o.request_id === requestId); },
+  getOffersByUser(userId)        { return this._offers.filter(o => o.offerer_id === userId); },
+  getOffersReceivedByUser(userId) {
+    return this._offers.filter(o => {
+      const req = this.getRequestById(o.request_id);
+      return req && req.requester_id === userId;
+    });
+  },
+  hasOffered(userId, requestId) { return this._offers.some(o => o.offerer_id === userId && o.request_id === requestId); },
+  createOffer(data) {
+    const offer = { _id: this.genId(), ...data, status: 'pending', createdAt: new Date().toISOString() };
+    this._offers.push(offer); this.persist(); return offer;
+  },
+  updateOfferStatus(id, status) {
+    const i = this._offers.findIndex(o => o._id === id);
+    if (i === -1) return null;
+    this._offers[i].status = status;
+    // If accepted, close the request
+    if (status === 'accepted') {
+      const req = this.getRequestById(this._offers[i].request_id);
+      if (req) this.updateRequest(req._id, { status: 'fulfilled' });
+    }
+    this.persist(); return this._offers[i];
+  },
 };
 
 // ── Navbar ────────────────────────────────────────────────────────────────────
@@ -286,6 +360,9 @@ function hideLoader() {
 function renderItemCard(item) {
   const owner = MockDB.findUserById(item.owner_id);
   const cat   = CATEGORIES.find(c => c.id === item.category);
+  const isHourly = item.rental_type === 'hourly';
+  const price = isHourly ? item.price_per_hour : item.price_per_day;
+  const unit  = isHourly ? '/hr' : '/day';
   return `
     <div class="item-card" onclick="window.location.href='item-detail.html?id=${item._id}'">
       <div class="item-card-img-wrap">
@@ -300,7 +377,7 @@ function renderItemCard(item) {
           ${item.location}
         </div>
         <div class="item-card-footer">
-          <div class="item-price">₹${item.price_per_day.toLocaleString()} <span>/day</span></div>
+          <div class="item-price">₹${(price||0).toLocaleString()} <span>${unit}</span></div>
           <div style="display:flex;align-items:center;gap:6px">
             ${renderStars(Math.round(owner?.rating || 0))}
             <span class="rating-count">${owner?.rating || 'New'}</span>

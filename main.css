@@ -68,7 +68,7 @@ ul,ol{list-style:none}
 .nav-links a:hover,.nav-links button:hover{color:var(--text-primary);background:var(--bg-card)}
 .nav-links a.active{color:var(--primary)}
 .nav-actions{display:flex;align-items:center;gap:.75rem}
-.nav-user-pill{display:flex;align-items:center;gap:.6rem;padding:.35rem 1rem .35rem .35rem;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-full);font-size:.875rem;font-weight:500;cursor:pointer;transition:var(--transition)}
+.nav-user-pill{display:flex;align-items:center;gap:.6rem;padding:.35rem 1rem .35rem .35rem;background:var(--bg-card);color:#fff;border:1px solid var(--border);border-radius:var(--radius-full);font-size:.875rem;font-weight:500;cursor:pointer;transition:var(--transition)}
 .nav-user-pill:hover{border-color:var(--border-hover);background:var(--bg-card-hover)}
 .nav-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;color:#fff;overflow:hidden;flex-shrink:0}
 .nav-avatar img{width:100%;height:100%;object-fit:cover}
@@ -263,8 +263,13 @@ ul,ol{list-style:none}
 .relative{position:relative}
 
 /* Responsive */
-@media(max-width:1024px){.grid-4{grid-template-columns:repeat(2,1fr)}.footer-grid{grid-template-columns:1fr 1fr;gap:2rem}}
+@media(max-width:1024px){
+  .grid-4{grid-template-columns:repeat(2,1fr)}
+  .footer-grid{grid-template-columns:1fr 1fr;gap:2rem}
+}
+
 @media(max-width:768px){
+  /* ── Navbar ── */
   .navbar{padding:0 1.25rem}
   .nav-links{display:none}
   .hamburger{display:flex}
@@ -272,14 +277,77 @@ ul,ol{list-style:none}
   .mobile-menu a,.mobile-menu button{display:block;padding:.75rem 1rem;color:var(--text-secondary);font-size:.95rem;font-weight:500;border-radius:var(--radius-sm);transition:var(--transition);background:transparent;width:100%;text-align:left}
   .mobile-menu a:hover,.mobile-menu button:hover{color:var(--text-primary);background:var(--bg-card)}
   @keyframes slideDown{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+
+  /* ── Layout ── */
   .section{padding:3rem 1.25rem}
+  .section-sm{padding:2rem 1.25rem}
   .grid-2,.grid-3,.grid-4{grid-template-columns:1fr}
+  .grid-auto{grid-template-columns:repeat(auto-fill,minmax(240px,1fr))}
+
+  /* ── Section headers ── */
+  .section-title{font-size:1.6rem}
+  .section-sub{font-size:.95rem}
+
+  /* ── Footer ── */
+  .footer{padding:2rem 1.25rem}
   .footer-grid{grid-template-columns:1fr;gap:1.5rem}
   .footer-bottom{flex-direction:column;gap:.5rem;text-align:center}
+
+  /* ── Tabs ── */
   .tabs{flex-wrap:wrap}
+
+  /* ── Dashboard ── */
+  .dash-layout{padding:1.5rem 1.25rem 3rem}
+  .dash-header{gap:1rem}
+  .dash-stats{grid-template-columns:repeat(2,1fr)}
+  .dash-tabs{gap:.15rem}
+  .dash-tab{padding:.55rem .85rem;font-size:.8rem}
+  .profile-grid{grid-template-columns:1fr}
+  .my-item-row{flex-wrap:wrap;gap:.75rem}
+  .my-item-actions{width:100%;justify-content:flex-end}
+
+  /* ── Item detail ── */
+  .item-layout{grid-template-columns:1fr;padding:1.5rem 1.25rem 3rem;gap:1.5rem}
+  .item-hero{padding:1.25rem 1.25rem 0}
+  .item-main-img{height:280px}
+  .item-info-title{font-size:1.4rem}
+  .booking-card{position:static}
+  .reviews-section{padding:0 1.25rem 3rem}
+
+  /* ── Add item ── */
+  .add-layout{grid-template-columns:1fr;padding:1.5rem 1.25rem}
+  .add-form-card{padding:1.5rem}
+  .form-row{grid-template-columns:1fr}
+  .tips-card{position:static}
+
+  /* ── Modal ── */
+  .modal{padding:1.5rem;border-radius:var(--radius-lg)}
+
+  /* ── Item cards ── */
+  .item-card-img,.item-card-img-wrap{height:180px}
 }
+
 @media(max-width:480px){
+  /* ── Search bar component ── */
   .search-bar{flex-direction:column;border-radius:var(--radius-md)}
   .search-bar .divider-v{display:none}
   .search-bar .search-btn{border-radius:0 0 var(--radius-md) var(--radius-md);padding:.85rem}
+
+  /* ── Buttons ── */
+  .btn-lg{padding:.75rem 1.25rem;font-size:.9rem}
+
+  /* ── Cards ── */
+  .card{border-radius:var(--radius-md)}
+
+  /* ── Grid auto tighter ── */
+  .grid-auto{grid-template-columns:1fr}
+
+  /* ── Dashboard stats ── */
+  .stat-num{font-size:1.5rem}
+
+  /* ── Booking card date row ── */
+  .date-row{grid-template-columns:1fr}
+
+  /* ── Item attrs ── */
+  .item-attrs{grid-template-columns:1fr 1fr}
 }

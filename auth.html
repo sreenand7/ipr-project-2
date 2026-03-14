@@ -190,10 +190,22 @@
             margin-top: .5rem;
         }
 
-        .auth-footer-text a {
-            color: var(--primary);
-            font-weight: 600;
+        .toggle-pw {
+            position: absolute;
+            right: .85rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            transition: var(--transition);
         }
+        .toggle-pw:hover { color: var(--text-secondary); }
+        .input-icon-wrap .form-input.has-toggle { padding-right: 2.75rem; }
 
         @media(max-width:640px) {
             .auth-split {
@@ -229,7 +241,7 @@
             Rent<span class="logo-dot">My</span>Things
         </a>
         <div class="nav-actions">
-            <a href="index.html" class="btn btn-ghost btn-sm">← Back to Browse</a>
+            <a href="index.html" class="btn btn-ghost btn-sm">← Back to Browser</a>
         </div>
     </nav>
 
@@ -324,7 +336,10 @@
                                 <path d="M7 11V7a5 5 0 0 1 10 0v4" />
                             </svg>
                             <input type="password" class="form-input" id="login-password" placeholder="Your password"
-                                required autocomplete="current-password" />
+                                required autocomplete="current-password" style="padding-right:2.75rem" />
+                            <button type="button" class="toggle-pw" onclick="togglePw('login-password',this)" tabindex="-1" title="Show/hide password">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                            </button>
                         </div>
                     </div>
                     <button type="submit" class="btn btn-primary w-full btn-lg" id="login-btn">
@@ -386,7 +401,10 @@
                                 <path d="M7 11V7a5 5 0 0 1 10 0v4" />
                             </svg>
                             <input type="password" class="form-input" id="reg-password" placeholder="Min. 6 characters"
-                                required minlength="6" autocomplete="new-password" />
+                                required minlength="6" autocomplete="new-password" style="padding-right:2.75rem" />
+                            <button type="button" class="toggle-pw" onclick="togglePw('reg-password',this)" tabindex="-1" title="Show/hide password">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                            </button>
                         </div>
                     </div>
                     <div class="form-group">
@@ -398,7 +416,10 @@
                                 <path d="M7 11V7a5 5 0 0 1 10 0v4" />
                             </svg>
                             <input type="password" class="form-input" id="reg-confirm" placeholder="Repeat password"
-                                required autocomplete="new-password" />
+                                required autocomplete="new-password" style="padding-right:2.75rem" />
+                            <button type="button" class="toggle-pw" onclick="togglePw('reg-confirm',this)" tabindex="-1" title="Show/hide password">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                            </button>
                         </div>
                     </div>
                     <button type="submit" class="btn btn-primary w-full btn-lg" id="register-btn">
@@ -437,6 +458,15 @@
             document.getElementById('form-' + tab).classList.add('active');
         }
 
+        function togglePw(id, btn) {
+            const inp = document.getElementById(id);
+            const isHidden = inp.type === 'password';
+            inp.type = isHidden ? 'text' : 'password';
+            btn.innerHTML = isHidden
+                ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`
+                : `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
+        }
+
         function handleLogin(e) {
             e.preventDefault();
             const email = document.getElementById('login-email').value.trim();
@@ -445,10 +475,11 @@
 
             const user = MockDB.findUserByEmail(email);
             if (!user || user.password !== password) {
-                toast('Invalid email or password. Try demo@example.com / password', 'error');
+                toast('Invalid email or password. Hint: arjun@example.com / password', 'error');
                 return;
             }
-            btn.disabled = true; btn.textContent = 'Signing in…';
+            btn.disabled = true;
+            btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation:spin .8s linear infinite"><path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0"/></svg> Signing in…';
 
             // Simulate slight delay
             setTimeout(() => {
@@ -473,7 +504,8 @@
             if (password !== confirm) { toast('Passwords do not match', 'error'); return; }
             if (MockDB.findUserByEmail(email)) { toast('Email already registered. Please sign in.', 'warning'); return; }
 
-            btn.disabled = true; btn.textContent = 'Creating account…';
+            btn.disabled = true;
+            btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation:spin .8s linear infinite"><path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0"/></svg> Creating account…';
             setTimeout(() => {
                 const user = MockDB.createUser({ name, email, password });
                 const { password: _, ...safeUser } = user;
